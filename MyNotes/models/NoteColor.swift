@@ -15,8 +15,7 @@ enum NoteColor: CaseIterable {
     case yellow
     case cyon
     case gray
-    case white
-    case lightBlue
+    case mint
     case pink
 
     var uiColor: UIColor {
@@ -27,8 +26,7 @@ enum NoteColor: CaseIterable {
         case .yellow: return UIColor.systemYellow
         case .cyon: return UIColor.systemTeal
         case .gray: return UIColor.systemGray
-        case .white: return UIColor.white 
-        case .lightBlue: return UIColor.lightGray
+        case .mint: return UIColor.systemMint
         case .pink: return UIColor.systemPink
         }
     }

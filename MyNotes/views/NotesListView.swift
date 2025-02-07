@@ -38,7 +38,7 @@ struct NotesListView: View {
 
                     Text(formatDate(note.creationDate))
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 }
                 .padding(.vertical, 16)
                 .padding(.horizontal, 24)

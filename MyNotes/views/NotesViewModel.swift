@@ -77,7 +77,7 @@ class NotesViewModel: ObservableObject {
                 isTodo: false,
                 hasContent: true,
                 creationDate: Date(),
-                backgroundColor: .lightBlue
+                backgroundColor: .mint
             ),
             Note(
                 title: "Reading List",
@@ -104,7 +104,7 @@ class NotesViewModel: ObservableObject {
                 isTodo: false,
                 hasContent: true,
                 creationDate: Date(),
-                backgroundColor: .white
+                backgroundColor: .mint
             ),
             Note(
                 title: "Budget Planning",

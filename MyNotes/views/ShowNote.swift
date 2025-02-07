@@ -18,7 +18,10 @@ struct ShowNote: View {
     var body: some View {
         VStack(alignment: .leading) {
             headerView()
-
+                .cornerRadius(10)
+//                .shadow(radius: 5)
+            Spacer()
+            
             if note.isTodo {
                 todoListView()
             }
@@ -41,7 +44,8 @@ struct ShowNote: View {
             Text(note.title)
                 .font(.title)
                 .fontWeight(.bold)
-
+                .foregroundStyle(note.backgroundColor.cellColor)
+                .padding()
             Spacer()
 
             Button(action: {
@@ -52,6 +56,7 @@ struct ShowNote: View {
                     .font(.title2)
             }
         }
+        .background(.ultraThinMaterial)
     }
 
     // MARK: - To-Do List View
