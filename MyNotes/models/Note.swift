@@ -7,19 +7,27 @@
 
 import UIKit
 
-struct Note: Identifiable {
+struct Note: Identifiable, Hashable {
     let id = UUID()
-    let title: String
-    let todoList: [Todo]
-    let content: String
-    let isTodo: Bool
-    let hasContent: Bool
+    var title: String
+    var todoList: [Todo]
+    var content: String
+    var isTodo: Bool
+    var hasContent: Bool
     let creationDate: Date
-    let backgroundColor: NoteColor
+    var backgroundColor: NoteColor
+    
+    static func == (lhs: Note, rhs: Note) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
-struct Todo {
-    let item: String
-    let isComplete: Bool
+struct Todo: Hashable {
+    var item: String
+    var isComplete: Bool
 }
 
