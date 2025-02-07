@@ -1,62 +1,52 @@
 # Xcode
 #
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
-
-## User settings
+# Ignore user-specific settings
 xcuserdata/
 
-## Obj-C/Swift specific
+# Ignore generated files
 *.hmap
 
-## App packaging
+# Ignore derived data
+DerivedData/
+
+# Ignore app packaging artifacts
 *.ipa
 *.dSYM.zip
 *.dSYM
 
-## Playgrounds
+# Playgrounds
 timeline.xctimeline
 playground.xcworkspace
 
 # Swift Package Manager
 #
-# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
-# Packages/
-# Package.pins
-# Package.resolved
-# *.xcodeproj
-#
-# Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
-# hence it is not needed unless you have added a package configuration file to your project
-# .swiftpm
-
+# Ignore build artifacts and dependency resolutions
 .build/
+Package.resolved
 
-# CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-# Pods/
-#
-# Add this line if you want to avoid checking in source code from the Xcode workspace
-# *.xcworkspace
+# Xcode automatically generates this directory, so it's not needed
+.swiftpm
 
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
+# Ignore Xcode workspace file if it's generated automatically
+*.xcworkspace
 
-Carthage/Build/
-
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo.
-# Instead, use fastlane to re-generate the screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/#source-control
-
+# Fastlane
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Ignore logs, temporary, and cache files
+*.log
+*.xcuserstate
+
+# Ignore environment files
+.env
+.env.local
+
+# Ignore generated documentation (DocC)
+*.doccarchive
+
+# Ignore SwiftLint and SwiftFormat cache
+.swiftlint.yml
+.swiftformat
