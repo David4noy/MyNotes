@@ -8,15 +8,8 @@
 import UIKit
 import SwiftUICore
 
-enum NoteColor: CaseIterable {
-    case blue
-    case green
-    case red
-    case yellow
-    case cyon
-    case gray
-    case mint
-    case pink
+enum NoteColor: CaseIterable, Codable {
+    case blue, green, red, yellow, cyon, gray, mint, pink
 
     var uiColor: UIColor {
         switch self {
@@ -30,8 +23,12 @@ enum NoteColor: CaseIterable {
         case .pink: return UIColor.systemPink
         }
     }
-    
+
     var cellColor: Color {
-        Color(uiColor).opacity(0.8) // Converts UIColor to SwiftUI Color
+        Color(uiColor).opacity(0.8)
+    }
+    
+    var textBackgroundColor: Color {
+        Color(uiColor).opacity(0.5)
     }
 }

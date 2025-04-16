@@ -6,49 +6,95 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct NotesListView: View {
-    @StateObject private var viewModel = NotesViewModel()
-    @State private var path = NavigationPath() // Keeps track of navigation
+    
+    @Environment(\.modelContext) private var context
+    @Query var notes: [Note]
+    
+//    @StateObject private var viewModel = NotesListViewModel()
+    @State private var path = NavigationPath()
+    @State private var showNewNoteSheet = false
+    @State private var selectedNote: Note? = nil
 
     var body: some View {
         NavigationStack(path: $path) {
             VStack(spacing: 10) {
-                Spacer().frame(height: 1)
-                CustomNavBar()
+                topSection
                 notesList()
             }
             .safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }
             .padding(.horizontal)
             .navigationDestination(for: Note.self) { selectedNote in
-                ShowNote(note: selectedNote)
+                ShowNoteView(note: selectedNote)
             }
+            
+            .sheet(isPresented: $showNewNoteSheet) {
+                NewNoteView { newNote in
+                    addNote(newNote)
+                    selectedNote = newNote
+                    showNewNoteSheet = false
+                }
+            }
+            .navigationDestination(item: $selectedNote) { note in
+                ShowNoteView(note: note)
+            }
+        }
+    }
+
+    private var topSection: some View {
+        VStack(spacing: 10) {
+            Spacer().frame(height: 1)
+            
+            CustomNavBar(addNote: {
+                showNewNoteSheet = true
+            })
         }
     }
     
     private func notesList() -> some View {
-        List(viewModel.notes) { note in
-            NavigationLink(value: note) { // Push ShowNote when tapped
-                HStack {
-                    Text(note.title)
-                        .font(.body)
-                        .fontWeight(.medium)
-
-                    Spacer()
-
-                    Text(formatDate(note.creationDate))
-                        .font(.caption)
-                        .foregroundStyle(.gray)
+        List {
+            ForEach(notes) { note in
+                NavigationLink(value: note) {
+                    noteRow(for: note)
                 }
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
-                .background(note.backgroundColor.cellColor)
-                .cornerRadius(10)
-                .shadow(radius: 5)
+                .listRowSeparator(.hidden)
             }
-            .listRowSeparator(.hidden)
+            .onDelete { indexes in
+                for index in indexes {
+                    deleteNote(at: index)
+                }
+            }
         }
         .listStyle(.plain)
+    }
+
+    private func noteRow(for note: Note) -> some View {
+        HStack {
+            Text(note.title)
+                .font(.body)
+                .fontWeight(.medium)
+            
+            Spacer()
+            
+            Text(formatDate(note.creationDate))
+                .font(.caption)
+                .foregroundStyle(.gray)
+        }
+        .padding(.vertical, 16)
+        .padding(.horizontal, 24)
+        .background(note.color.cellColor)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+    }
+    
+    func addNote(_ note: Note) {
+        context.insert(note)
+    }
+    
+    func deleteNote(at index: Int) {
+        context.delete(notes[index])
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -58,6 +104,7 @@ struct NotesListView: View {
     }
 }
 
-#Preview {
-    NotesListView()
-}
+
+//#Preview {
+//    NotesListView()
+//}

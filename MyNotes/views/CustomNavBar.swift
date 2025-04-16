@@ -8,33 +8,35 @@
 import SwiftUI
 
 struct CustomNavBar: View {
+    var addNote: () -> Void
+
     var body: some View {
         HStack {
             Button(action: {
-                print("Menu button tapped")
+                print("Menu tapped")
             }) {
                 Image(systemName: "line.horizontal.3")
                     .font(.title2)
             }
-            
+
             Spacer()
-            
+
             Text("My Notes")
                 .font(.headline)
                 .fontWeight(.bold)
-            
+
             Spacer()
-            
+
             HStack(spacing: 16) {
                 Button(action: {
-                    print("Plus button tapped")
+                    addNote()
                 }) {
                     Image(systemName: "plus")
                         .font(.title2)
                 }
-                
+
                 Button(action: {
-                    print("Search button tapped")
+                    print("Search tapped")
                 }) {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
@@ -46,6 +48,3 @@ struct CustomNavBar: View {
     }
 }
 
-#Preview {
-    CustomNavBar()
-}
