@@ -95,20 +95,24 @@ struct ShowNoteView: View {
     }
 
     private var textContent: some View {
-        TextEditor(text: $viewModel.note.content)
-            .padding()
-            .font(.body)
-            .cornerRadius(10)
-            .foregroundColor(Color.primary)
-            .padding()
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") {
-                        hideKeyboard()
-                    }
-                }
-            }
+        MultilineTextView(text: $viewModel.note.content)
+            .frame(minHeight: 200)
+//        TextEditor(text: $viewModel.note.content)
+//            .padding(16) // Inner padding of text
+//            .background(
+//                RoundedRectangle(cornerRadius: 10)
+//                    .fill(Color(.systemBackground))
+//            )
+//            .foregroundColor(.primary)
+//            .padding() // Outer padding
+//            .toolbar {
+//                ToolbarItemGroup(placement: .keyboard) {
+//                    Spacer()
+//                    Button("Done") {
+//                        hideKeyboard()
+//                    }
+//                }
+//            }
     }
     
     private func hideKeyboard() {
