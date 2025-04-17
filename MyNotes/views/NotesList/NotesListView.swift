@@ -39,12 +39,14 @@ struct NotesListView: View {
                     showNewNoteSheet = false
                 }
             }
+            
             .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDeleteIndex) { index in
                 Button("Delete", role: .destructive) {
                     deleteNote(at: index)
                 }
                 Button("Cancel", role: .cancel) {}
             }
+            
             .navigationDestination(item: $selectedNote) { note in
                 ShowNoteView(note: note)
             }
@@ -73,7 +75,6 @@ struct NotesListView: View {
                 for index in indexes {
                     noteToDeleteIndex = index
                     showDeleteConfirmation = true
-//                    deleteNote(at: index)
                 }
             }
         }
@@ -105,6 +106,7 @@ struct NotesListView: View {
     
     func deleteNote(at index: Int) {
         context.delete(notes[index])
+        noteToDeleteIndex = nil
     }
     
     private func formatDate(_ date: Date) -> String {
