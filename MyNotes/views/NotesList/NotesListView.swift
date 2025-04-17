@@ -17,6 +17,8 @@ struct NotesListView: View {
     @State private var path = NavigationPath()
     @State private var showNewNoteSheet = false
     @State private var selectedNote: Note? = nil
+    @State private var showDeleteConfirmation = false
+    @State private var noteToDeleteIndex: Int?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -36,6 +38,12 @@ struct NotesListView: View {
                     selectedNote = newNote
                     showNewNoteSheet = false
                 }
+            }
+            .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDeleteIndex) { index in
+                Button("Delete", role: .destructive) {
+                    deleteNote(at: index)
+                }
+                Button("Cancel", role: .cancel) {}
             }
             .navigationDestination(item: $selectedNote) { note in
                 ShowNoteView(note: note)
@@ -63,7 +71,9 @@ struct NotesListView: View {
             }
             .onDelete { indexes in
                 for index in indexes {
-                    deleteNote(at: index)
+                    noteToDeleteIndex = index
+                    showDeleteConfirmation = true
+//                    deleteNote(at: index)
                 }
             }
         }

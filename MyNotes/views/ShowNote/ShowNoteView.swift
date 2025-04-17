@@ -10,6 +10,7 @@ import SwiftUI
 struct ShowNoteView: View {
     @StateObject private var viewModel: ShowNoteViewModel
     @FocusState private var focusedTodoIndex: Int?
+    @Environment(\.editMode) private var editMode
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -68,27 +69,28 @@ struct ShowNoteView: View {
                     Text("Add Item")
                 }
             }
-            
-            ForEach(Array(viewModel.note.todos.enumerated()), id: \.offset) { index, todo in
-                
+
+            ForEach($viewModel.note.todos) { $todo in
                 HStack {
                     Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
                         .foregroundColor(todo.isComplete ? .green : .gray)
                         .onTapGesture {
-                            viewModel.toggleTodoComplete(index)
+                            todo.isComplete.toggle()
                         }
 
-                    TextField("To-do", text: Binding(
-                                get: { viewModel.note.todos[index].item },
-                                set: { viewModel.note.todos[index].item = $0 }
-                            ))
-                        .focused($focusedTodoIndex, equals: index)
+                    TextField("To-do", text: $todo.item)
+                        .focused(
+                            $focusedTodoIndex,
+                            equals: viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
+                        )
                         .padding(.vertical, 8)
                         .foregroundColor(todo.isComplete ? .gray : .black)
                         .strikethrough(todo.isComplete, color: .gray)
                 }
                 .padding(.vertical, 8)
             }
+            .onDelete(perform: deleteTodo)
+            .onMove(perform: moveTodo)
 
             Button(action: {
                 viewModel.addTodo()
@@ -101,6 +103,11 @@ struct ShowNoteView: View {
             }
         }
         .listStyle(.plain)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                EditButton()
+            }
+        }
     }
     
 
@@ -123,6 +130,14 @@ struct ShowNoteView: View {
 //                    }
 //                }
 //            }
+    }
+    
+    private func deleteTodo(at offsets: IndexSet) {
+        viewModel.note.todos.remove(atOffsets: offsets)
+    }
+
+    private func moveTodo(from source: IndexSet, to destination: Int) {
+        viewModel.note.todos.move(fromOffsets: source, toOffset: destination)
     }
     
     private func hideKeyboard() {
