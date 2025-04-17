@@ -40,12 +40,12 @@ struct ShowNoteView: View {
             TextField("Title", text: $viewModel.note.title)
                 .font(.title)
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .padding()
             Spacer()
         }
         .background(.ultraThinMaterial)
-        .cornerRadius(10)
+        .cornerRadius(viewModel.note.type == .todo ? 5 : 20)
     }
 
     private var contentSection: some View {
@@ -60,47 +60,11 @@ struct ShowNoteView: View {
 
     private var todoList: some View {
         List {
-            Button(action: {
-                viewModel.insertTodo()
-                focusedTodoIndex = 0
-            }) {
-                HStack {
-                    Image(systemName: "plus.circle")
-                    Text("Add Item")
-                }
-            }
+            addButtonTop
 
-            ForEach($viewModel.note.todos) { $todo in
-                HStack {
-                    Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(todo.isComplete ? .green : .gray)
-                        .onTapGesture {
-                            todo.isComplete.toggle()
-                        }
+            todoItemsSection
 
-                    TextField("To-do", text: $todo.item)
-                        .focused(
-                            $focusedTodoIndex,
-                            equals: viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
-                        )
-                        .padding(.vertical, 8)
-                        .foregroundColor(todo.isComplete ? .gray : .black)
-                        .strikethrough(todo.isComplete, color: .gray)
-                }
-                .padding(.vertical, 8)
-            }
-            .onDelete(perform: deleteTodo)
-            .onMove(perform: moveTodo)
-
-            Button(action: {
-                viewModel.addTodo()
-                focusedTodoIndex = viewModel.note.todos.count - 1
-            }) {
-                HStack {
-                    Image(systemName: "plus.circle")
-                    Text("Add Item")
-                }
-            }
+            addButtonBottom
         }
         .listStyle(.plain)
         .toolbar {
@@ -109,6 +73,61 @@ struct ShowNoteView: View {
             }
         }
     }
+
+    // MARK: - Components
+
+    private var addButtonTop: some View {
+        Button(action: {
+            viewModel.insertTodo()
+            focusedTodoIndex = 0
+        }) {
+            todoButtonLabel
+        }
+        .listRowBackground(Color.white.opacity(0.6))
+    }
+
+    private var addButtonBottom: some View {
+        Button(action: {
+            viewModel.addTodo()
+            focusedTodoIndex = viewModel.note.todos.count - 1
+        }) {
+            todoButtonLabel
+        }
+        .listRowBackground(Color.white.opacity(0.6))
+    }
+
+    private var todoButtonLabel: some View {
+        HStack {
+            Image(systemName: "plus.circle")
+            Text("Add Item")
+        }
+    }
+
+    private var todoItemsSection: some View {
+        ForEach($viewModel.note.todos) { $todo in
+            HStack {
+                Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(todo.isComplete ? .green : .gray)
+                    .onTapGesture {
+                        todo.isComplete.toggle()
+                    }
+
+                TextField("To-do", text: $todo.item)
+                    .focused(
+                        $focusedTodoIndex,
+                        equals: viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
+                    )
+                    .padding(.vertical, 8)
+                    .foregroundColor(todo.isComplete ? .gray : .black)
+                    .strikethrough(todo.isComplete, color: .gray)
+            }
+            .padding(.vertical, 8)
+            .listRowBackground(Color.white.opacity(0.4))
+        }
+        .onDelete(perform: deleteTodo)
+        .onMove(perform: moveTodo)
+    }
+
     
 
     private var textContent: some View {
