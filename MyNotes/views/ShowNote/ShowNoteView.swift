@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ShowNoteView: View {
     @StateObject private var viewModel: ShowNoteViewModel
+    @FocusState private var focusedTodoIndex: Int?
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -23,6 +24,14 @@ struct ShowNoteView: View {
         .padding()
         .background(viewModel.note.color.cellColor.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    hideKeyboard()
+                }
+            }
+        }
     }
 
     private var titleSection: some View {
@@ -32,14 +41,6 @@ struct ShowNoteView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .padding()
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") {
-                            hideKeyboard()
-                        }
-                    }
-                }
             Spacer()
         }
         .background(.ultraThinMaterial)
@@ -58,7 +59,18 @@ struct ShowNoteView: View {
 
     private var todoList: some View {
         List {
+            Button(action: {
+                viewModel.insertTodo()
+                focusedTodoIndex = 0
+            }) {
+                HStack {
+                    Image(systemName: "plus.circle")
+                    Text("Add Item")
+                }
+            }
+            
             ForEach(Array(viewModel.note.todos.enumerated()), id: \.offset) { index, todo in
+                
                 HStack {
                     Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
                         .foregroundColor(todo.isComplete ? .green : .gray)
@@ -66,24 +78,21 @@ struct ShowNoteView: View {
                             viewModel.toggleTodoComplete(index)
                         }
 
-                    TextField("Todo Item", text: $viewModel.note.todos[index].item)
+                    TextField("To-do", text: Binding(
+                                get: { viewModel.note.todos[index].item },
+                                set: { viewModel.note.todos[index].item = $0 }
+                            ))
+                        .focused($focusedTodoIndex, equals: index)
                         .padding(.vertical, 8)
                         .foregroundColor(todo.isComplete ? .gray : .black)
                         .strikethrough(todo.isComplete, color: .gray)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Spacer()
-                                Button("Done") {
-                                    hideKeyboard()
-                                }
-                            }
-                        }
                 }
                 .padding(.vertical, 8)
             }
 
             Button(action: {
                 viewModel.addTodo()
+                focusedTodoIndex = viewModel.note.todos.count - 1
             }) {
                 HStack {
                     Image(systemName: "plus.circle")
@@ -93,6 +102,7 @@ struct ShowNoteView: View {
         }
         .listStyle(.plain)
     }
+    
 
     private var textContent: some View {
         MultilineTextView(text: $viewModel.note.content)
