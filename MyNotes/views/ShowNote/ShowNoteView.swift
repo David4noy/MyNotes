@@ -11,6 +11,9 @@ struct ShowNoteView: View {
     @StateObject private var viewModel: ShowNoteViewModel
     @FocusState private var focusedTodoIndex: Int?
     @Environment(\.editMode) private var editMode
+    @State private var showPopup = false
+    @State private var todoIndex: Int?
+    @State private var todoItem = ""
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -33,6 +36,8 @@ struct ShowNoteView: View {
                 }
             }
         }
+        
+        .overlay(popupOverlay)
     }
 
     private var titleSection: some View {
@@ -57,6 +62,39 @@ struct ShowNoteView: View {
             }
         }
     }
+    
+    private var popupOverlay: some View {
+        Group {
+            if showPopup {
+                GeometryReader { geometry in
+                    let size = min(geometry.size.width * 0.8, 400)
+
+                    ZStack {
+                        Color.black.opacity(0.3)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                showPopup = false
+                            }
+
+                        if let todoIndex {
+                            TextEditorPopup(
+                                isPresented: $showPopup,
+                                internalText: $todoItem,
+                                note: $viewModel.note,
+                                index: todoIndex
+                            )
+                            .frame(width: size, height: size)
+                            .transition(.opacity)
+                            .zIndex(1)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+        }
+        .animation(.easeInOut, value: showPopup)
+    }
+
 
     private var todoList: some View {
         List {
@@ -69,7 +107,9 @@ struct ShowNoteView: View {
         .listStyle(.plain)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                EditButton()
+                if !showPopup {
+                    EditButton()
+                }
             }
         }
     }
@@ -120,16 +160,30 @@ struct ShowNoteView: View {
                     .padding(.vertical, 8)
                     .foregroundColor(todo.isComplete ? .gray : .black)
                     .strikethrough(todo.isComplete, color: .gray)
+                
+                Spacer()
+
+                Button("Open") {
+                    getTodoItemAndShowPopup(todoId: todo.id)
+                }
+                .buttonStyle(.bordered)
             }
             .padding(.vertical, 8)
             .listRowBackground(Color.white.opacity(0.4))
         }
         .onDelete(perform: deleteTodo)
         .onMove(perform: moveTodo)
+        
     }
-
     
-
+    private func getTodoItemAndShowPopup(todoId: UUID) {
+        if let index = viewModel.note.todos.firstIndex(where: { $0.id == todoId }) {
+            todoIndex = index
+            todoItem = viewModel.note.todos[index].item
+            showPopup = true
+        }
+    }
+    
     private var textContent: some View {
         MultilineTextView(text: $viewModel.note.content)
             .frame(minHeight: 200)

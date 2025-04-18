@@ -14,7 +14,7 @@ class Note: Identifiable, Hashable {
     var id = UUID().uuidString
     var title: String
     var content: String
-    var todos: [Todo]
+    var todos: [TodoItem]
     var type: NoteType
     var color: NoteColor
     var creationDate: Date
@@ -24,7 +24,7 @@ class Note: Identifiable, Hashable {
         type: NoteType,
         color: NoteColor,
         content: String = "",
-        todos: [Todo] = [],
+        todos: [TodoItem] = [],
         creationDate: Date = Date()
     ) {
         self.title = title
@@ -44,7 +44,7 @@ class Note: Identifiable, Hashable {
     }
 }
 
-struct Todo: Identifiable, Hashable, Codable {
+struct TodoItem: Identifiable, Hashable, Codable {
     var id = UUID()
     var item: String
     var isComplete: Bool

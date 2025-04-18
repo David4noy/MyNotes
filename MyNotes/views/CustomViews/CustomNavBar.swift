@@ -9,11 +9,13 @@ import SwiftUI
 
 struct CustomNavBar: View {
     var addNote: () -> Void
+    var toggleSearch: () -> Void
+    var menuTapped: () -> Void
 
     var body: some View {
         HStack {
             Button(action: {
-                print("Menu tapped")
+                menuTapped()
             }) {
                 Image(systemName: "line.horizontal.3")
                     .font(.title2)
@@ -36,7 +38,7 @@ struct CustomNavBar: View {
                 }
 
                 Button(action: {
-                    print("Search tapped")
+                    toggleSearch() 
                 }) {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)

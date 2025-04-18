@@ -19,10 +19,10 @@ class ShowNoteViewModel: ObservableObject {
     }
     
     func insertTodo() {
-        note.todos.insert(Todo(item: "", isComplete: false), at: 0)
+        note.todos.insert(TodoItem(item: "", isComplete: false), at: 0)
     }
 
     func addTodo() {
-        note.todos.append(Todo(item: "", isComplete: false))
+        note.todos.append(TodoItem(item: "", isComplete: false))
     }
 }

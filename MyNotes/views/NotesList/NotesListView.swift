@@ -12,25 +12,55 @@ struct NotesListView: View {
     
     @Environment(\.modelContext) private var context
     @Query var notes: [Note]
+    @FocusState private var isSearchFieldFocused: Bool
     
 //    @StateObject private var viewModel = NotesListViewModel()
-    @State private var path = NavigationPath()
+//    @State private var path = NavigationPath()
     @State private var showNewNoteSheet = false
     @State private var selectedNote: Note? = nil
     @State private var showDeleteConfirmation = false
     @State private var noteToDeleteIndex: Int?
+    @State private var isSearching = false
+    @State private var searchText = ""
+    @State private var showMenuSheet = false
+    @State private var selectedMenuItem: MenuItem? = nil
+    @State var settings = AppSettings.load()
+
+    
+    private var filteredNotes: [Note] {
+        let base = searchText.isEmpty
+            ? notes
+            : notes.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.content.localizedCaseInsensitiveContains(searchText)
+            }
+        
+        switch settings.sortBy {
+        case .date:
+            return base.sorted { $0.creationDate > $1.creationDate }
+        case .color:
+            let colorOrder: [NoteColor] = NoteColor.allCases
+            return base.sorted {
+                guard let firstIndex = colorOrder.firstIndex(of: $0.color),
+                      let secondIndex = colorOrder.firstIndex(of: $1.color) else {
+                    return false
+                }
+                return firstIndex < secondIndex
+            }
+        case .alphabetically:
+            return base.sorted { $0.title.lowercased() < $1.title.lowercased() }
+        }
+    }
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             VStack(spacing: 10) {
                 topSection
                 notesList()
             }
             .safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }
             .padding(.horizontal)
-            .navigationDestination(for: Note.self) { selectedNote in
-                ShowNoteView(note: selectedNote)
-            }
+            
             
             .sheet(isPresented: $showNewNoteSheet) {
                 NewNoteView { newNote in
@@ -38,6 +68,9 @@ struct NotesListView: View {
                     selectedNote = newNote
                     showNewNoteSheet = false
                 }
+            }
+            .sheet(isPresented: $showMenuSheet) {
+                MenuSheet(selectedMenuItem: $selectedMenuItem, showMenuSheet: $showMenuSheet)
             }
             
             .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDeleteIndex) { index in
@@ -50,6 +83,26 @@ struct NotesListView: View {
             .navigationDestination(item: $selectedNote) { note in
                 ShowNoteView(note: note)
             }
+            .navigationDestination(item: $selectedMenuItem) { item in
+                switch item {
+                case .settings:
+                    SettingsView(settings: $settings)
+                case .about:
+                    AboutView()
+                case .terms:
+                    TermsOfUseView()
+                case .iCloudSync:
+                    Text("Sync coming soon…").padding()
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
+                }
+            }
         }
     }
 
@@ -57,16 +110,42 @@ struct NotesListView: View {
         VStack(spacing: 10) {
             Spacer().frame(height: 1)
             
-            CustomNavBar(addNote: {
-                showNewNoteSheet = true
-            })
+            CustomNavBar(
+                addNote: {showNewNoteSheet = true},
+                toggleSearch: {
+                    withAnimation {
+                        isSearching.toggle()
+                        if isSearching {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                isSearchFieldFocused = true
+                            }
+                        } else {
+                            searchText = ""
+                            isSearchFieldFocused = false
+                        }
+                    }
+                },
+                menuTapped: {
+                    showMenuSheet = true
+                }
+            )
+            
+            if isSearching {
+                TextField("Search notes...", text: $searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal, 8)
+                    .focused($isSearchFieldFocused)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
         }
     }
     
     private func notesList() -> some View {
         List {
-            ForEach(notes) { note in
-                NavigationLink(value: note) {
+            ForEach(filteredNotes) { note in
+                Button {
+                    selectedNote = note
+                } label: {
                     noteRow(for: note)
                 }
                 .listRowSeparator(.hidden)
@@ -114,9 +193,29 @@ struct NotesListView: View {
         formatter.dateFormat = "MMM dd, yyyy"
         return formatter.string(from: date)
     }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }
 
 
 //#Preview {
 //    NotesListView()
 //}
+
+struct AboutView: View {
+    var body: some View {
+        Text("This app helps you manage notes.")
+            .padding()
+            .navigationTitle("About")
+    }
+}
+
+struct TermsOfUseView: View {
+    var body: some View {
+        Text("Terms of Use coming soon.")
+            .padding()
+            .navigationTitle("Terms of Use")
+    }
+}
