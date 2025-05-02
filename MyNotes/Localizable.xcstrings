@@ -1,0 +1,341 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "A-Z" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "א-ב"
+          }
+        }
+      }
+    },
+    "About" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אודות"
+          }
+        }
+      }
+    },
+    "Add Item" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוספת פריט"
+          }
+        }
+      }
+    },
+    "Add Location to Notes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוספת מיקום לפתקים"
+          }
+        }
+      }
+    },
+    "App Language" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שפת אפליקציה"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete this note?" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "האם למחוק את הפתק?"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ביטול"
+          }
+        }
+      }
+    },
+    "Color" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "צבע"
+          }
+        }
+      }
+    },
+    "Current Language text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "English"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "עברית"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תאריך"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקה"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "סיום"
+          }
+        }
+      }
+    },
+    "Edit Text" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "עריכת טקסט"
+          }
+        }
+      }
+    },
+    "Enter title" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כותרת"
+          }
+        }
+      }
+    },
+    "iCloud Auto Sync" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "סנכרון אוטומטי עם iCloud"
+          }
+        }
+      }
+    },
+    "iCloud Sync" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "סינכרון עם iCloud"
+          }
+        }
+      }
+    },
+    "Is To-Do List?" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "רשימת פריטים?"
+          }
+        }
+      }
+    },
+    "Menu" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תפריט"
+          }
+        }
+      }
+    },
+    "My Notes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפתקים שלי"
+          }
+        }
+      }
+    },
+    "New Note" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "פתק חדש"
+          }
+        }
+      }
+    },
+    "Note Type" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "סוג פתק"
+          }
+        }
+      }
+    },
+    "Open" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "פתיחה"
+          }
+        }
+      }
+    },
+    "Options" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אפשרויות"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שמירה"
+          }
+        }
+      }
+    },
+    "Search notes..." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "חיפוש פתק…"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגדרות"
+          }
+        }
+      }
+    },
+    "Sort By" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מיון לפי"
+          }
+        }
+      }
+    },
+    "Sort Notes By" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מיון פתקים לפי"
+          }
+        }
+      }
+    },
+    "Sync coming soon…" : {
+
+    },
+    "Terms of Use" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תנאי שימוש"
+          }
+        }
+      }
+    },
+    "Terms of Use coming soon." : {
+
+    },
+    "This app helps you manage notes." : {
+
+    },
+    "Title" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כותרת"
+          }
+        }
+      }
+    },
+    "Version 1.0.0" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "גירסה 1.0.0"
+          }
+        }
+      }
+    },
+    "Write to-do" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כתיבת פריט"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

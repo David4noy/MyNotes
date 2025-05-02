@@ -16,19 +16,25 @@ struct SettingsView: View {
                 Section(header: Text("Sort Notes By")) {
                     Picker("Sort By", selection: $settings.sortBy) {
                         ForEach(SortOption.allCases) { option in
-                            Text(option.rawValue).tag(option)
+                            Text(option.title).tag(option)
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
 
-                Section(header: Text("Language")) {
-                    Picker("App Language", selection: $settings.language) {
-                        ForEach(AppLanguage.allCases) { lang in
-                            Text(lang.rawValue).tag(lang)
-                        }
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
                     }
-                    .pickerStyle(MenuPickerStyle())
+                } label: {
+                    HStack {
+                        Text("App Language")
+                        Spacer()
+                        Text("Current Language text")
+                            .foregroundColor(.gray)
+                        Image(systemName: isAppInHebrew ? "chevron.left" : "chevron.right")
+                            .foregroundColor(.gray)
+                    }
                 }
 
                 Section(header: Text("Options")) {

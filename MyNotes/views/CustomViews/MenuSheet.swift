@@ -19,7 +19,7 @@ struct MenuSheet: View {
                         selectedMenuItem = item
                         showMenuSheet = false
                     }) {
-                        Text(item.rawValue)
+                        Text(item.title)
                     }
                 }
 

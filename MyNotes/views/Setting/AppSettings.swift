@@ -7,23 +7,31 @@
 
 import Foundation
 
-enum SortOption: String, CaseIterable, Identifiable, Codable {
-    case date = "Date"
-    case color = "Color"
-    case alphabetically = "A-Z"
-    var id: String { rawValue }
+var isAppInHebrew: Bool {
+    Locale.current.language.languageCode?.identifier == "he"
 }
 
-enum AppLanguage: String, CaseIterable, Identifiable, Codable {
-    case `default` = "Default"
-    case english = "EN"
-    case hebrew = "HE"
-    var id: String { rawValue }
+enum SortOption: CaseIterable, Identifiable, Codable {
+    case date
+    case color
+    case alphabetically
+
+    var id: String { title }
+
+    var title: String {
+        switch self {
+        case .date:
+            return String(localized: "Date")
+        case .color:
+            return String(localized: "Color")
+        case .alphabetically:
+            return String(localized: "A-Z")
+        }
+    }
 }
 
 struct AppSettings: Codable, Equatable {
     var sortBy: SortOption = .date
-    var language: AppLanguage = .default
     var addLocationToNotes: Bool = false
     var iCloudAutoSync: Bool = false
 }

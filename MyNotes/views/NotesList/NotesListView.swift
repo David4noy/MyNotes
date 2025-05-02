@@ -132,8 +132,9 @@ struct NotesListView: View {
             
             if isSearching {
                 TextField("Search notes...", text: $searchText)
+                    .font(.system(size: 22))
                     .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, 12)
                     .focused($isSearchFieldFocused)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -163,14 +164,15 @@ struct NotesListView: View {
     private func noteRow(for note: Note) -> some View {
         HStack {
             Text(note.title)
-                .font(.body)
+                .font(.system(size: 20))
                 .fontWeight(.medium)
             
             Spacer()
             
             Text(formatDate(note.creationDate))
+                .font(.system(size: 12))
                 .font(.caption)
-                .foregroundStyle(.gray)
+                .foregroundStyle(.secondary)
         }
         .padding(.vertical, 16)
         .padding(.horizontal, 24)

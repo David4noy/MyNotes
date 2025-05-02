@@ -24,6 +24,7 @@ struct TextEditorPopup: View {
                     .font(.headline)
                 
                 TextEditor(text: $internalText)
+                    .font(.system(size: 24)) 
                     .frame(height: 150)
                 //  .padding()
                     .background(Color(.systemGray6))
@@ -39,6 +40,7 @@ struct TextEditorPopup: View {
                     
                     Button("Save") {
                         note.todos[index].item = internalText
+                        note.creationDate = Date()
                         isPresented = false
                     }
                     .fontWeight(.bold)

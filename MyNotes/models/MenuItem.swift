@@ -7,11 +7,25 @@
 
 import SwiftUI
 
-enum MenuItem: String, CaseIterable, Identifiable {
-    case settings = "Settings"
-    case iCloudSync = "iCloud Sync"
-    case terms = "Terms of Use"
-    case about = "About"
+enum MenuItem: CaseIterable, Identifiable {
+    case settings
+    case iCloudSync
+    case terms
+    case about
 
-    var id: String { self.rawValue }
+    var id: String { title }
+
+    var title: String {
+        switch self {
+        case .settings:
+            return String(localized: "Settings")
+        case .iCloudSync:
+            return String(localized: "iCloud Sync")
+        case .terms:
+            return String(localized: "Terms of Use")
+        case .about:
+            return String(localized: "About")
+        }
+    }
 }
+

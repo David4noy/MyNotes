@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct MultilineTextView: UIViewRepresentable {
-    @Binding var text: String
+    @Binding var note: Note
+    var textColor: Color
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -16,9 +17,9 @@ struct MultilineTextView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
+        textView.font = UIFont.preferredFont(forTextStyle: .title1)
         textView.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        textView.textColor = UIColor.label
+        textView.textColor = UIColor(textColor)
         textView.layer.cornerRadius = 20
         textView.isScrollEnabled = true
         textView.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
@@ -36,8 +37,8 @@ struct MultilineTextView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
-        if uiView.text != text {
-            uiView.text = text
+        if uiView.text != note.content {
+            uiView.text = note.content
         }
     }
 
@@ -49,7 +50,8 @@ struct MultilineTextView: UIViewRepresentable {
         }
 
         func textViewDidChange(_ textView: UITextView) {
-            parent.text = textView.text
+            parent.note.content = textView.text
+            parent.note.creationDate = Date()
         }
 
         @objc func doneTapped() {

@@ -36,4 +36,15 @@ enum NoteColor: CaseIterable, Codable {
     var textBackgroundColor: Color {
         Color(uiColor).opacity(0.5)
     }
+    
+    var textColor: Color {
+        switch self {
+        case .yellow, .mint:
+            return .black.opacity(0.87) // fallback, but low contrast
+        case .blue, .indigo, .purple, .brown:
+            return .black
+        default:
+            return .white
+        }
+    }
 }

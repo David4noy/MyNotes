@@ -16,13 +16,20 @@ class ShowNoteViewModel: ObservableObject {
 
     func toggleTodoComplete(_ index: Int) {
         note.todos[index].isComplete.toggle()
+        onSaveNote()
     }
     
     func insertTodo() {
         note.todos.insert(TodoItem(item: "", isComplete: false), at: 0)
+        onSaveNote()
     }
 
     func addTodo() {
         note.todos.append(TodoItem(item: "", isComplete: false))
+        onSaveNote()
+    }
+    
+    func onSaveNote() {
+        note.creationDate = Date()
     }
 }
