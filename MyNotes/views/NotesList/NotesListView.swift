@@ -92,7 +92,7 @@ struct NotesListView: View {
                 case .terms:
                     TermsOfUseView()
                 case .iCloudSync:
-                    Text("Sync coming soon…").padding()
+                    ICloudSyncView()
                 }
             }
             .toolbar {

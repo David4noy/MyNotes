@@ -71,6 +71,16 @@
         }
       }
     },
+    "Change iCloud Settings" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שינוי הגדרות iCloud"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "he" : {
@@ -117,6 +127,16 @@
         }
       }
     },
+    "Disabled" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כבוי"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "he" : {
@@ -137,6 +157,16 @@
         }
       }
     },
+    "Enabled" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מופעל"
+          }
+        }
+      }
+    },
     "Enter title" : {
       "localizations" : {
         "he" : {
@@ -153,6 +183,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "סנכרון אוטומטי עם iCloud"
+          }
+        }
+      }
+    },
+    "iCloud explanation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app securely backs up your notes to iCloud. You can manage iCloud access in your device's Settings."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אפליקציה זו מגבה את הפתקים שלך ל iCloud בצורה מאובטחת. ניתן להפעיל ולכבות בהגדרות המכשיר"
           }
         }
       }
@@ -287,8 +333,25 @@
         }
       }
     },
-    "Sync coming soon…" : {
-
+    "Sync Now" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "גיבוי מיידי"
+          }
+        }
+      }
+    },
+    "Sync Status" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מצב גיבוי"
+          }
+        }
+      }
     },
     "Terms of Use" : {
       "localizations" : {
