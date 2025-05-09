@@ -52,7 +52,7 @@ struct NewNoteView: View {
             HStack {
                 ForEach(NoteColor.allCases, id: \.self) { color in
                     Circle()
-                        .fill(color.cellColor)
+                        .fill(color.noteColor)
                         .frame(width: 30, height: 30)
                         .overlay(
                             Circle().stroke(Color.black, lineWidth: selectedColor == color ? 2 : 0)

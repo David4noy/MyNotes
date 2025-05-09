@@ -176,7 +176,7 @@ struct NotesListView: View {
         }
         .padding(.vertical, 16)
         .padding(.horizontal, 24)
-        .background(note.color.cellColor)
+        .background(note.color.noteColor)
         .cornerRadius(10)
         .shadow(radius: 5)
     }

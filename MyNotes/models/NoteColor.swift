@@ -5,36 +5,31 @@
 //  Created by David Noy on 07/02/2025.
 //
 
-import UIKit
 import SwiftUICore
 
 enum NoteColor: CaseIterable, Codable {
     case yellow, orange, green, mint, teal, cyon, blue, indigo, purple, pink, red, brown, gray
-
-    var uiColor: UIColor {
+    
+    var noteColor: Color {
         switch self {
-        case .blue: return UIColor.systemBlue
-        case .green: return UIColor.systemGreen
-        case .red: return UIColor.systemRed
-        case .yellow: return UIColor.systemYellow
-        case .cyon: return UIColor.systemCyan
-        case .gray: return UIColor.systemGray
-        case .pink: return UIColor.systemPink
-        case .brown: return UIColor.systemBrown
-        case .orange: return UIColor.systemOrange
-        case .teal: return UIColor.systemTeal
-        case .mint: return UIColor.systemMint
-        case .purple: return UIColor.systemPurple
-        case .indigo: return UIColor.systemIndigo
+        case .blue: return .blue
+        case .green: return .green
+        case .red: return .red
+        case .yellow: return .yellow
+        case .cyon: return .cyan
+        case .gray: return .gray
+        case .pink: return .pink
+        case .brown: return .brown
+        case .orange: return .orange
+        case .teal: return .teal
+        case .mint: return .mint
+        case .purple: return .purple
+        case .indigo: return .indigo
         }
-    }
-
-    var cellColor: Color {
-        Color(uiColor)
     }
     
     var textBackgroundColor: Color {
-        Color(uiColor).opacity(0.5)
+        noteColor.opacity(0.5)
     }
     
     var textColor: Color {

@@ -47,7 +47,7 @@ struct TextEditorPopup: View {
                 }
             }
             .padding()
-            .background(note.color.cellColor)
+            .background(note.color.noteColor)
             .cornerRadius(20)
             .shadow(radius: 10)
         }

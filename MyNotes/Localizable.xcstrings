@@ -177,6 +177,9 @@
         }
       }
     },
+    "Get Direction" : {
+
+    },
     "iCloud Auto Sync" : {
       "localizations" : {
         "he" : {
@@ -272,6 +275,9 @@
           }
         }
       }
+    },
+    "Open Lookaround" : {
+
     },
     "Options" : {
       "localizations" : {

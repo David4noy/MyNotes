@@ -27,7 +27,7 @@ struct ShowNoteView: View {
             Spacer()
         }
         .padding()
-        .background(viewModel.note.color.cellColor.ignoresSafeArea())
+        .background(viewModel.note.color.noteColor.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
@@ -82,7 +82,7 @@ struct ShowNoteView: View {
             HStack {
                 ForEach(NoteColor.allCases, id: \.self) { color in
                     Circle()
-                        .fill(color.cellColor)
+                        .fill(color.noteColor)
                         .frame(width: 30, height: 30)
                         .overlay(
                             Circle().stroke(Color.black, lineWidth: viewModel.note.color == color ? 2 : 0)
