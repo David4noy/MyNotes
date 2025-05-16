@@ -6,12 +6,29 @@
 //
 
 import Foundation
+import CoreLocation
 
 class ShowNoteViewModel: ObservableObject {
     @Published var note: Note
+    @Published var address: String? = nil
 
     init(note: Note) {
         self.note = note
+    }
+    
+    func loadAddressIfNeeded() async {
+        guard
+            let lat = note.latitude,
+            let lon = note.longitude
+        else {
+            return
+        }
+
+        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let result = await LocationManager.shared.getFullAddress(from: coordinate)
+        await MainActor.run {
+            self.address = result
+        }
     }
 
     func toggleTodoComplete(_ index: Int) {

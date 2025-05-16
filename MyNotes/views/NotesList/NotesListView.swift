@@ -104,6 +104,9 @@ struct NotesListView: View {
                 }
             }
         }
+        .task {
+            LocationManager.shared.checkIfLocationServicesIsEnabled()
+        }
     }
 
     private var topSection: some View {

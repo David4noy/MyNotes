@@ -9,39 +9,56 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
-    let cameraPosition: MapCameraPosition = .region(.init(center: .init(latitude: 37.3346, longitude: -122.0090), latitudinalMeters: 1300, longitudinalMeters: 1300))
+    let title: String
+    let latitude: Double
+    let longitude: Double
     
-    let locationManager = CLLocationManager()
+    private var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    private var cameraPosition: MapCameraPosition {
+        .region(.init(center: coordinate, latitudinalMeters: 1300, longitudinalMeters: 1300))
+    }
+    
     @State private var lookAroundScene: MKLookAroundScene?
-    @State private var  isShowingLookAroundView = false
-    
+    @State private var isShowingLookAroundView = false
+    @State private var route: MKRoute?
+
     var body: some View {
         Map(initialPosition: cameraPosition) {
-//            Marker("Apple", systemImage: "laptopcomputer", coordinate: .appleVisitorCenter)
-            
-            Annotation("Apple Visitor Center", coordinate: .appleVisitorCenter, anchor: .bottom) {
-                Image(systemName: "laptopcomputer")
+            Annotation(title, coordinate: coordinate, anchor: .bottom) {
+                Image(systemName: "mappin.circle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
                     .padding(7)
-                    .background(.pink.gradient, in: .circle)
+                    .background(.red.gradient, in: .circle)
                     .contextMenu {
                         Button("Open Lookaround", systemImage: "binoculars") {
-                            
+                            Task {
+                                lookAroundScene = await getLookAroundScene(from: coordinate)
+                                guard lookAroundScene != nil else { return }
+                                isShowingLookAroundView = true
+                            }
                         }
-                        
+
                         Button("Get Direction", systemImage: "arrow.turn.down.right") {
-                            
+                            getDirections(to: coordinate)
                         }
                     }
             }
-            
+
             UserAnnotation()
+
+            if let route {
+                MapPolyline(route)
+                    .stroke(.green, lineWidth: 4)
+            }
         }
         .onAppear {
-            locationManager.requestWhenInUseAuthorization()
+            LocationManager.shared.checkIfLocationServicesIsEnabled()
         }
         .mapControls {
             MapUserLocationButton()
@@ -50,17 +67,33 @@ struct MapView: View {
             MapScaleView()
         }
         .mapStyle(.hybrid(elevation: .realistic))
-//        .mapStyle(.standard(elevation: .realistic))
         .lookAroundViewer(isPresented: $isShowingLookAroundView, initialScene: lookAroundScene)
     }
-}
 
-extension CLLocationCoordinate2D {
-    static let appleHQ = CLLocationCoordinate2D(latitude: 37.3346, longitude: -122.0090)
-    static let appleVisitorCenter = CLLocationCoordinate2D(latitude: 37.332753, longitude: -122.005372)
-    static let panamaPark = CLLocationCoordinate2D(latitude: 37.347730, longitude: -122.018715)
-}
+    private func getLookAroundScene(from coordinate: CLLocationCoordinate2D) async -> MKLookAroundScene? {
+        do {
+            return try await MKLookAroundSceneRequest(coordinate: coordinate).scene
+        } catch {
+            print("Cannot retrieve Look Around scene: \(error.localizedDescription)")
+            return nil
+        }
+    }
 
-#Preview {
-    MapView()
+    private func getDirections(to destination: CLLocationCoordinate2D) {
+        Task {
+            guard let userLocation = await LocationManager.shared.getUserLocation() else { return }
+
+            let request = MKDirections.Request()
+            request.source = MKMapItem(placemark: MKPlacemark(coordinate: userLocation))
+            request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
+            request.transportType = .walking
+
+            do {
+                let directions = try await MKDirections(request: request).calculate()
+                route = directions.routes.first
+            } catch {
+                print("Failed to calculate directions: \(error.localizedDescription)")
+            }
+        }
+    }
 }

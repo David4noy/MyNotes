@@ -76,13 +76,18 @@ struct NewNoteView: View {
 
     private var saveButton: some View {
         Button("Save") {
-            let newNote = Note(
-                title: title.isEmpty ? "Untitled" : title,
-                type: isTodo ? .todo : .textType,
-                color: selectedColor
-            )
-            onSave(newNote)
-            dismiss()
+            Task {
+                let location = await LocationManager.shared.getUserLocation()
+                let newNote = Note(
+                    title: title.isEmpty ? "Untitled" : title,
+                    type: isTodo ? .todo : .textType,
+                    color: selectedColor,
+                    latitude: location?.latitude,
+                    longitude: location?.longitude
+                )
+                onSave(newNote)
+                dismiss()
+            }
         }
     }
 

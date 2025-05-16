@@ -18,6 +18,8 @@ class Note: Identifiable, Hashable {
     var type: NoteType
     var color: NoteColor
     var creationDate: Date
+    var latitude: Double?
+    var longitude: Double?
     
     init(
         title: String,
@@ -25,7 +27,9 @@ class Note: Identifiable, Hashable {
         color: NoteColor,
         content: String = "",
         todos: [TodoItem] = [],
-        creationDate: Date = Date()
+        creationDate: Date = Date(),
+        latitude: Double?,
+        longitude: Double?
     ) {
         self.title = title
         self.type = type
@@ -33,6 +37,8 @@ class Note: Identifiable, Hashable {
         self.content = content
         self.todos = todos
         self.creationDate = creationDate
+        self.latitude = latitude
+        self.longitude = longitude
     }
 
     static func == (lhs: Note, rhs: Note) -> Bool {

@@ -15,30 +15,43 @@ struct ShowNoteView: View {
     @State private var todoIndex: Int?
     @State private var todoItem = ""
     @State private var showColorPicker = false
+    @State private var isShowingMap = false
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
-            titleSection
-            contentSection
-            Spacer()
-        }
-        .padding()
-        .background(viewModel.note.color.noteColor.ignoresSafeArea())
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
+        NavigationStack {
+            VStack(alignment: .leading) {
+                titleSection
+                if let address = viewModel.address { noteLocationSection(address: address) }
+                contentSection
                 Spacer()
-                Button("Done") {
-                    hideKeyboard()
+            }
+            .padding()
+            .background(viewModel.note.color.noteColor.ignoresSafeArea())
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
                 }
             }
+            .task {
+                await viewModel.loadAddressIfNeeded()
+            }
+            .overlay(popupOverlay)
         }
-        
-        .overlay(popupOverlay)
+        .navigationDestination(isPresented: $isShowingMap) {
+            MapView(
+                title: viewModel.note.title,
+                latitude: viewModel.note.latitude!,
+                longitude: viewModel.note.longitude!
+            )
+        }
     }
 
     private var titleSection: some View {
@@ -96,8 +109,6 @@ struct ShowNoteView: View {
         }
     }
 
-
-
     private var contentSection: some View {
         Group {
             if viewModel.note.type == .todo {
@@ -106,6 +117,17 @@ struct ShowNoteView: View {
                 textContent
             }
         }
+    }
+    
+    private func noteLocationSection(address: String) -> some View {
+        Button {
+            isShowingMap = true
+        } label: {
+            Label(address, systemImage: "location")
+                .font(.subheadline)
+                .foregroundColor(viewModel.note.color.textColor)
+        }
+        .padding(4)
     }
     
     private var popupOverlay: some View {
