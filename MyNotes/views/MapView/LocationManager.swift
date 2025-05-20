@@ -28,7 +28,18 @@ class LocationManager: NSObject {
     }
     
     func checkIfLocationServicesIsEnabled() {
-        locationManager.requestWhenInUseAuthorization()
+        DispatchQueue.global().async {
+            let isEnabled = CLLocationManager.locationServicesEnabled()
+            
+            DispatchQueue.main.async {
+                if isEnabled {
+                    self.locationManager.requestWhenInUseAuthorization()
+                    self.locationManager.startUpdatingLocation() // triggers system popup if needed
+                } else {
+                    self.locationError.send(.locationServicesDisabled)
+                }
+            }
+        }
     }
     
     private func handleAuthorization(_ status: CLAuthorizationStatus) {
@@ -115,6 +126,7 @@ class LocationManager: NSObject {
 
 extension LocationManager: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        manager.stopUpdatingLocation()
         handleAuthorization(manager.authorizationStatus)
     }
 }

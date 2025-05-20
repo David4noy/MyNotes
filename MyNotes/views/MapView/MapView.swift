@@ -18,7 +18,7 @@ struct MapView: View {
     }
 
     private var cameraPosition: MapCameraPosition {
-        .region(.init(center: coordinate, latitudinalMeters: 1300, longitudinalMeters: 1300))
+        .region(.init(center: coordinate, latitudinalMeters: 100, longitudinalMeters: 100))
     }
     
     @State private var lookAroundScene: MKLookAroundScene?

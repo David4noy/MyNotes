@@ -39,7 +39,7 @@ enum NoteColor: CaseIterable, Codable {
         case .blue, .indigo, .purple, .brown:
             return .black
         default:
-            return .white
+            return .black
         }
     }
 }

@@ -41,6 +41,17 @@
         }
       }
     },
+    "An unexpected error occurred while trying to access location." : {
+      "comment" : "Shown when location access fails unexpectedly",
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אירעה שגיאה בלתי צפויה בעת ניסיון לגשת למיקום"
+          }
+        }
+      }
+    },
     "App Language" : {
       "localizations" : {
         "he" : {
@@ -67,6 +78,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ביטול"
+          }
+        }
+      }
+    },
+    "CFBundleDisplayName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Notes"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפתקים שלי"
           }
         }
       }
@@ -178,7 +206,14 @@
       }
     },
     "Get Direction" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "חישוב מסלול"
+          }
+        }
+      }
     },
     "iCloud Auto Sync" : {
       "localizations" : {
@@ -222,6 +257,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "רשימת פריטים?"
+          }
+        }
+      }
+    },
+    "Location access is denied for this app.\nPlease go to Settings → My Notes → Location and allow access." : {
+      "comment" : "Shown when location access is denied by the user",
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הגישה למיקום חסומה לאפליקציה זו. אנא עבור אל הגדרות ← הפתקים שלי ← מיקום והפעל את הגישה."
+          }
+        }
+      }
+    },
+    "Location Services" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שירותי מיקום"
+          }
+        }
+      }
+    },
+    "Location Services are disabled on your device.\nTo enable, go to Settings → Privacy & Security → Location Services." : {
+      "comment" : "Shown when location services are turned off system-wide",
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שירותי המיקום במכשיר שלך כבויים. כדי להפעילם, עבור אל הגדרות ← פרטיות ואבטחה ← שירותי מיקום."
           }
         }
       }
@@ -277,7 +344,14 @@
       }
     },
     "Open Lookaround" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפעל את תצוגת הסביבה"
+          }
+        }
+      }
     },
     "Options" : {
       "localizations" : {

@@ -273,6 +273,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyNotes/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "My Notes";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to get the note crreation location and display it on the map alongside your current location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -307,6 +308,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyNotes/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "My Notes";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to get the note crreation location and display it on the map alongside your current location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

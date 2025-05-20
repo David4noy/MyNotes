@@ -19,7 +19,7 @@ struct NotesListView: View {
     @State private var showNewNoteSheet = false
     @State private var selectedNote: Note? = nil
     @State private var showDeleteConfirmation = false
-    @State private var noteToDeleteIndex: Int?
+    @State private var noteToDelete: Note?
     @State private var isSearching = false
     @State private var searchText = ""
     @State private var showMenuSheet = false
@@ -73,9 +73,9 @@ struct NotesListView: View {
                 MenuSheet(selectedMenuItem: $selectedMenuItem, showMenuSheet: $showMenuSheet)
             }
             
-            .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDeleteIndex) { index in
+            .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDelete) { note in
                 Button("Delete", role: .destructive) {
-                    deleteNote(at: index)
+                    deleteNote(note)
                 }
                 Button("Cancel", role: .cancel) {}
             }
@@ -104,9 +104,9 @@ struct NotesListView: View {
                 }
             }
         }
-        .task {
-            LocationManager.shared.checkIfLocationServicesIsEnabled()
-        }
+//        .task {
+//            LocationManager.shared.checkIfLocationServicesIsEnabled()
+//        }
     }
 
     private var topSection: some View {
@@ -156,7 +156,7 @@ struct NotesListView: View {
             }
             .onDelete { indexes in
                 for index in indexes {
-                    noteToDeleteIndex = index
+                    noteToDelete = filteredNotes[index]
                     showDeleteConfirmation = true
                 }
             }
@@ -188,9 +188,9 @@ struct NotesListView: View {
         context.insert(note)
     }
     
-    func deleteNote(at index: Int) {
-        context.delete(notes[index])
-        noteToDeleteIndex = nil
+    func deleteNote(_ note: Note) {
+        context.delete(note)
+        noteToDelete = nil
     }
     
     private func formatDate(_ date: Date) -> String {

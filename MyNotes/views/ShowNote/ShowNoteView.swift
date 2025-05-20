@@ -48,8 +48,8 @@ struct ShowNoteView: View {
         .navigationDestination(isPresented: $isShowingMap) {
             MapView(
                 title: viewModel.note.title,
-                latitude: viewModel.note.latitude!,
-                longitude: viewModel.note.longitude!
+                latitude: viewModel.note.latitude ?? 0.0,
+                longitude: viewModel.note.longitude ?? 0.0
             )
         }
     }
@@ -244,10 +244,12 @@ struct ShowNoteView: View {
                 }
                 .padding(.vertical, 8)
 
-                Rectangle()
-                    .fill(Color.gray.opacity(0.5))
-                    .frame(height: 0.5)
-                    .padding(.top, 24)
+                if viewModel.note.todos.last?.id != todo.id {
+                   Rectangle()
+                       .fill(Color.gray.opacity(0.5))
+                       .frame(height: 0.5)
+                       .padding(.top, 24)
+               }
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color.white.opacity(0.4))

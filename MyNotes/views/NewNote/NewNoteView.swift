@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import Combine
 
 struct NewNoteView: View {
     @Environment(\.dismiss) var dismiss
     @State private var title: String = ""
     @State private var selectedColor: NoteColor = .yellow
     @State private var isTodo: Bool = false
+    @State private var showLocationAlert = false
+    @State private var locationAlertMessage = ""
+    @State private var cancellables = Set<AnyCancellable>()
+    @State private var isMainSetting = false
+    
     var onSave: (Note) -> Void
 
     var body: some View {
@@ -30,6 +36,12 @@ struct NewNoteView: View {
                     cancelButton
                 }
             }
+        }
+        .onAppear {
+            setupLocationHandling()
+        }
+        .alert(isPresented: $showLocationAlert) {
+            locationAlert
         }
     }
 
@@ -94,6 +106,64 @@ struct NewNoteView: View {
     private var cancelButton: some View {
         Button("Cancel") {
             dismiss()
+        }
+    }
+    
+    private func setupLocationHandling() {
+        LocationManager.shared.checkIfLocationServicesIsEnabled()
+        
+        LocationManager.shared.locationError
+            .receive(on: RunLoop.main)
+            .sink { error in
+                switch error {
+                case .locationServicesDenied:
+                    locationAlertMessage = NSLocalizedString(
+                        "Location access is denied for this app.\nPlease go to Settings → My Notes → Location and allow access.",
+                        comment: "Shown when location access is denied by the user"
+                    )
+                    isMainSetting = false
+                    showLocationAlert = true
+                case .locationServicesDisabled:
+                    locationAlertMessage = NSLocalizedString(
+                        "Location Services are disabled on your device.\nTo enable, go to Settings → Privacy & Security → Location Services.",
+                        comment: "Shown when location services are turned off system-wide"
+                    )
+                    isMainSetting = true
+                    showLocationAlert = true
+                case .locationServicesError:
+                    locationAlertMessage = NSLocalizedString("An unexpected error occurred while trying to access location.", comment: "Shown when location access fails unexpectedly")
+                    showLocationAlert = true
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private var locationAlert: Alert {
+        Alert(
+            title: Text("Location Services"),
+            message: Text(locationAlertMessage),
+            primaryButton: .default(Text("Settings"), action: {
+                if isMainSetting {
+                    openMainSettings()
+                } else {
+                    openAppSettings()
+                }
+            }),
+            secondaryButton: .cancel()
+        )
+    }
+    
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
+
+    private func openMainSettings() {
+        guard let url = URL(string: "App-Prefs:") else { return }
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        } else {
+            openAppSettings() // fallback
         }
     }
 }
