@@ -185,8 +185,8 @@ struct ShowNoteView: View {
 
     private var addButtonTop: some View {
         Button(action: {
-            viewModel.insertTodo()
-            focusedTodoIndex = 0
+            let newId = viewModel.insertTodoAndGetID()
+            focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
         }) {
             todoButtonLabel
         }
@@ -195,8 +195,8 @@ struct ShowNoteView: View {
 
     private var addButtonBottom: some View {
         Button(action: {
-            viewModel.addTodo()
-            focusedTodoIndex = viewModel.note.todos.count - 1
+            let newId = viewModel.addTodoAndGetID()
+            focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
         }) {
             todoButtonLabel
         }

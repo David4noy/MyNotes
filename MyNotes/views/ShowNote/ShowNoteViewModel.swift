@@ -36,14 +36,22 @@ class ShowNoteViewModel: ObservableObject {
         onSaveNote()
     }
     
-    func insertTodo() {
-        note.todos.insert(TodoItem(item: "", isComplete: false), at: 0)
+    func insertTodoAndGetID() -> UUID {
+        let newTodo = TodoItem(item: "", isComplete: false)
+        note.todos.insert(newTodo, at: 0)
         onSaveNote()
+        return newTodo.id
     }
 
-    func addTodo() {
-        note.todos.append(TodoItem(item: "", isComplete: false))
+    func addTodoAndGetID() -> UUID {
+        let newTodo = TodoItem(item: "", isComplete: false)
+        note.todos.append(newTodo)
         onSaveNote()
+        return newTodo.id
+    }
+    
+    func indexOfTodo(withId id: UUID) -> Int? {
+        note.todos.firstIndex { $0.id == id }
     }
     
     func onSaveNote() {
