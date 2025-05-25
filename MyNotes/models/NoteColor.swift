@@ -8,11 +8,10 @@
 import SwiftUICore
 
 enum NoteColor: CaseIterable, Codable {
-    case yellow, orange, green, mint, teal, cyon, blue, indigo, purple, pink, red, brown, gray
+    case yellow, orange, green, mint, teal, cyon, indigo, purple, pink, red, brown, gray
     
     var noteColor: Color {
         switch self {
-        case .blue: return .blue
         case .green: return .green
         case .red: return .red
         case .yellow: return .yellow
@@ -36,7 +35,7 @@ enum NoteColor: CaseIterable, Codable {
         switch self {
         case .yellow, .mint:
             return .black.opacity(0.87) // fallback, but low contrast
-        case .blue, .indigo, .purple, .brown:
+        case .indigo, .purple, .brown:
             return .black
         default:
             return .black
