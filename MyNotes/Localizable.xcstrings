@@ -109,6 +109,26 @@
         }
       }
     },
+    "Choose from Library" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בחירה מתוך הספריה"
+          }
+        }
+      }
+    },
+    "Choose Image Source" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בחירת מקור לתמונה"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "he" : {
@@ -251,6 +271,16 @@
         }
       }
     },
+    "Image" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תמונה"
+          }
+        }
+      }
+    },
     "Is To-Do List?" : {
       "localizations" : {
         "he" : {
@@ -333,12 +363,19 @@
         }
       }
     },
-    "Open" : {
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We use the camera to let you add images to your note."
+          }
+        },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "פתיחה"
+            "value" : "אנו צריכים גישה למצלמה לצורך הוספת תמונה לפתק שלך"
           }
         }
       }
@@ -429,6 +466,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "מצב גיבוי"
+          }
+        }
+      }
+    },
+    "Take Photo" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "צילום תמונה"
           }
         }
       }

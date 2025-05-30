@@ -17,6 +17,7 @@ struct NewNoteView: View {
     @State private var locationAlertMessage = ""
     @State private var cancellables = Set<AnyCancellable>()
     @State private var isMainSetting = false
+    @State private var shouldAddLocation: Bool = false
     
     var onSave: (Note) -> Void
 
@@ -37,9 +38,9 @@ struct NewNoteView: View {
                 }
             }
         }
-        .onAppear {
-            setupLocationHandling()
-        }
+//        .onAppear {
+//            setupLocationHandling()
+//        }
         .alert(isPresented: $showLocationAlert) {
             locationAlert
         }
@@ -81,6 +82,12 @@ struct NewNoteView: View {
     private var typeSection: some View {
         Section(header: Text("Note Type")) {
             Toggle("Is To-Do List?", isOn: $isTodo)
+            Toggle("Add Location to Notes", isOn: $shouldAddLocation)
+                .onChange(of: shouldAddLocation) {
+                    if shouldAddLocation {
+                        setupLocationHandling()
+                    }
+                }
         }
     }
 
@@ -149,7 +156,9 @@ struct NewNoteView: View {
                     openAppSettings()
                 }
             }),
-            secondaryButton: .cancel()
+            secondaryButton: .cancel(Text("Cancel"), action: {
+                shouldAddLocation = false
+            })
         )
     }
     

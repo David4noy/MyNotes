@@ -16,6 +16,11 @@ struct ShowNoteView: View {
     @State private var todoItem = ""
     @State private var showColorPicker = false
     @State private var isShowingMap = false
+    @State private var showImageSourceDialog = false
+    @State private var showCamera = false
+    @State private var showPhotoLibrary = false
+    @State private var selectedUIImage: UIImage?
+    @State private var isShowingFullImage = false
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -24,9 +29,15 @@ struct ShowNoteView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
-                titleSection
+                HStack {
+                    imageSection
+                    titleSection
+                        .layoutPriority(1)
+                }
+                
                 if let address = viewModel.address { noteLocationSection(address: address) }
                 contentSection
+                
                 Spacer()
             }
             .padding()
@@ -41,6 +52,9 @@ struct ShowNoteView: View {
                 }
             }
             .task {
+                if selectedUIImage == nil {
+                    selectedUIImage = viewModel.note.getImage()
+                }
                 await viewModel.loadAddressIfNeeded()
             }
             .overlay(popupOverlay)
@@ -52,11 +66,14 @@ struct ShowNoteView: View {
                 longitude: viewModel.note.longitude ?? 0.0
             )
         }
+        .navigationDestination(isPresented: $isShowingFullImage) {
+            ShowImageView(image: selectedUIImage)
+        }
     }
 
     private var titleSection: some View {
         VStack(spacing: 0) {
-            HStack {
+            HStack (spacing: 4) {
                 TextField(
                     String(localized: "Title"),
                     text: $viewModel.note.title,
@@ -67,9 +84,11 @@ struct ShowNoteView: View {
                     }
                 )
                 .font(.title)
+                .minimumScaleFactor(0.7)
                 .fontWeight(.bold)
                 .foregroundStyle(.primary)
                 .padding()
+                .layoutPriority(1)
 
                 Button {
                     withAnimation {
@@ -77,7 +96,16 @@ struct ShowNoteView: View {
                     }
                 } label: {
                     Image(systemName: "paintpalette")
-                        .padding()
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 4)
+                }
+                
+                Button {
+                    showImageSourceDialog = true
+                } label: {
+                    Image(systemName: "camera.fill")
+                        .padding(.vertical, 8)
+                        .padding(.trailing, 16)
                 }
             }
             .background(.ultraThinMaterial)
@@ -86,6 +114,27 @@ struct ShowNoteView: View {
             if showColorPicker {
                 colorPicker
                     .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .confirmationDialog("Choose Image Source", isPresented: $showImageSourceDialog) {
+            Button("Take Photo") {
+                showCamera = true
+            }
+            Button("Choose from Library") {
+                showPhotoLibrary = true
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        .sheet(isPresented: $showCamera) {
+            CameraPicker(image: $selectedUIImage)
+        }
+        .sheet(isPresented: $showPhotoLibrary) {
+            PhotoLibraryPicker(image: $selectedUIImage)
+        }
+        .onChange(of: selectedUIImage) {
+            if let selectedUIImage {
+                viewModel.note.setImage(from: selectedUIImage)
+                viewModel.onSaveNote()
             }
         }
     }
@@ -128,6 +177,28 @@ struct ShowNoteView: View {
                 .foregroundColor(viewModel.note.color.textColor)
         }
         .padding(4)
+    }
+    
+    private var imageSection: some View {
+        Group {
+            if let image = selectedUIImage {
+                HStack {
+                    Spacer()
+                    Button {
+                        isShowingFullImage = true
+                    } label: {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxHeight: 42)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .shadow(radius: 1)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    Spacer()
+                }
+            }
+        }
     }
     
     private var popupOverlay: some View {
@@ -189,8 +260,16 @@ struct ShowNoteView: View {
             focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
         }) {
             todoButtonLabel
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white.opacity(0.6))
+                .cornerRadius(6)
+                .shadow(radius: 4)
         }
-        .listRowBackground(Color.white.opacity(0.6))
+        .buttonStyle(PlainButtonStyle())
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
 
     private var addButtonBottom: some View {
@@ -199,8 +278,16 @@ struct ShowNoteView: View {
             focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
         }) {
             todoButtonLabel
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white.opacity(0.6))
+                .cornerRadius(6)
+                .shadow(radius: 4)
         }
-        .listRowBackground(Color.white.opacity(0.6))
+        .buttonStyle(PlainButtonStyle())
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
 
     private var todoButtonLabel: some View {
@@ -213,46 +300,59 @@ struct ShowNoteView: View {
 
     private var todoItemsSection: some View {
         ForEach($viewModel.note.todos) { $todo in
+            let index = viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
+            let isFocused = focusedTodoIndex == index
+            let shouldEdit = (todo.item.isEmpty || isFocused)
+            let completeColor: Color = .black.opacity(0.3)
+            
             VStack(spacing: 0) {
                 HStack {
                     Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(todo.isComplete ? .green : .gray)
+                        .foregroundColor(todo.isComplete ? .green : .blue)
                         .onTapGesture {
                             todo.isComplete.toggle()
                         }
 
-                    TextField("Write to-do", text: $todo.item, onEditingChanged: { isEditing in
-                        if !isEditing {
-                            viewModel.onSaveNote()
-                        }
-                    })
-                    .font(.system(size: 24))
-                    .focused(
-                        $focusedTodoIndex,
-                        equals: viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
-                    )
-                    .padding(.vertical, 8)
-                    .foregroundColor(todo.isComplete ? .gray : viewModel.note.color.textColor)
-                    .strikethrough(todo.isComplete, color: .gray)
+                    if shouldEdit {
+                        TextField("Write to-do", text: $todo.item, onEditingChanged: { isEditing in
+                            if !isEditing {
+                                viewModel.onSaveNote()
+                            }
+                        })
+                        .font(.system(size: 24))
+                        .focused($focusedTodoIndex, equals: index)
+                        .foregroundColor(todo.isComplete ? completeColor : viewModel.note.color.textColor)
+                        .strikethrough(todo.isComplete, color: completeColor)
+                        .padding(.vertical, 8)
+                    } else {
+                        Text(todo.item.isEmpty ? "Write to-do" : todo.item)
+                            .font(.system(size: 24))
+                            .foregroundColor(todo.isComplete ? completeColor : viewModel.note.color.textColor)
+                            .strikethrough(todo.isComplete, color: completeColor)
+                            .padding(.vertical, 8)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
 
                     Spacer()
-
-                    Button("Open") {
-                        getTodoItemAndShowPopup(todoId: todo.id)
-                    }
-                    .buttonStyle(.bordered)
+                    
+                    Image(systemName: isAppInHebrew ? "chevron.left" : "chevron.right")
+                        .foregroundColor(todo.isComplete ? completeColor: viewModel.note.color.textColor)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    getTodoItemAndShowPopup(todoId: todo.id)
                 }
                 .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                .background(Color.white.opacity(0.4))
+                .cornerRadius(10)
+                .shadow(radius: 4)
 
-                if viewModel.note.todos.last?.id != todo.id {
-                   Rectangle()
-                       .fill(Color.gray.opacity(0.5))
-                       .frame(height: 0.5)
-                       .padding(.top, 24)
-               }
             }
             .listRowSeparator(.hidden)
-            .listRowBackground(Color.white.opacity(0.4))
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
         }
         .onDelete(perform: deleteTodo)
         .onMove(perform: moveTodo)

@@ -21,6 +21,9 @@ class Note: Identifiable, Hashable {
     var latitude: Double?
     var longitude: Double?
     
+    @Attribute(.externalStorage)
+    private var imageData: Data?
+    
     init(
         title: String,
         type: NoteType,
@@ -47,6 +50,19 @@ class Note: Identifiable, Hashable {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+    
+    func setImage(from uiImage: UIImage) {
+        self.imageData = uiImage.pngData()
+    }
+    
+    func setImageData(_ data: Data?) {
+        self.imageData = data
+    }
+    
+    func getImage() -> UIImage? {
+        guard let data = imageData else { return nil }
+        return UIImage(data: data)
     }
 }
 
