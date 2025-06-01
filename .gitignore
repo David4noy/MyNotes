@@ -50,3 +50,5 @@ fastlane/test_output
 # Ignore SwiftLint and SwiftFormat cache
 .swiftlint.yml
 .swiftformat
+
+MyNotes/Helpers/CryptoHelper.swift

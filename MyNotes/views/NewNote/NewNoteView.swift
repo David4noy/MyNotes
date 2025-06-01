@@ -14,10 +14,12 @@ struct NewNoteView: View {
     @State private var selectedColor: NoteColor = .yellow
     @State private var isTodo: Bool = false
     @State private var showLocationAlert = false
-    @State private var locationAlertMessage = ""
+    @State private var showImportAlert = false
+    @State private var alertMessage = ""
     @State private var cancellables = Set<AnyCancellable>()
     @State private var isMainSetting = false
     @State private var shouldAddLocation: Bool = false
+    @State private var showingFileImporter = false
     
     var onSave: (Note) -> Void
 
@@ -31,6 +33,11 @@ struct NewNoteView: View {
             .navigationTitle("New Note")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
+                    Button("Open Note") {
+                        showingFileImporter = true
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
                     saveButton
                 }
                 ToolbarItem(placement: .cancellationAction) {
@@ -38,11 +45,44 @@ struct NewNoteView: View {
                 }
             }
         }
-//        .onAppear {
-//            setupLocationHandling()
-//        }
         .alert(isPresented: $showLocationAlert) {
             locationAlert
+        }
+        .alert("Import Failed", isPresented: $showImportAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(alertMessage)
+        }
+        .fileImporter(
+            isPresented: $showingFileImporter,
+            allowedContentTypes: [.data],
+            allowsMultipleSelection: false
+        ) { result in
+            do {
+                guard let selectedFile = try result.get().first else { return }
+                
+                guard selectedFile.startAccessingSecurityScopedResource() else {
+                    throw NSError(domain: "com.mynotes", code: 1, userInfo: [NSLocalizedDescriptionKey: "Permission denied"])
+                }
+                defer { selectedFile.stopAccessingSecurityScopedResource() }
+                
+                if let importedNote = importNote(from: selectedFile) {
+                    let newNote = importedNote
+                    newNote.id = UUID().uuidString
+                    newNote.creationDate = Date()
+                    
+                    onSave(newNote)
+                    dismiss()
+                } else {
+                    alertMessage = "Failed to import note: invalid file or decryption failed."
+                }
+                
+            } catch {
+                print("Failed to open note: \(error.localizedDescription)")
+                alertMessage = "Failed to open note"
+                isMainSetting = false
+                showLocationAlert = true
+            }
         }
     }
 
@@ -124,21 +164,21 @@ struct NewNoteView: View {
             .sink { error in
                 switch error {
                 case .locationServicesDenied:
-                    locationAlertMessage = NSLocalizedString(
+                    alertMessage = NSLocalizedString(
                         "Location access is denied for this app.\nPlease go to Settings → My Notes → Location and allow access.",
                         comment: "Shown when location access is denied by the user"
                     )
                     isMainSetting = false
                     showLocationAlert = true
                 case .locationServicesDisabled:
-                    locationAlertMessage = NSLocalizedString(
+                    alertMessage = NSLocalizedString(
                         "Location Services are disabled on your device.\nTo enable, go to Settings → Privacy & Security → Location Services.",
                         comment: "Shown when location services are turned off system-wide"
                     )
                     isMainSetting = true
                     showLocationAlert = true
                 case .locationServicesError:
-                    locationAlertMessage = NSLocalizedString("An unexpected error occurred while trying to access location.", comment: "Shown when location access fails unexpectedly")
+                    alertMessage = NSLocalizedString("An unexpected error occurred while trying to access location.", comment: "Shown when location access fails unexpectedly")
                     showLocationAlert = true
                 }
             }
@@ -148,7 +188,7 @@ struct NewNoteView: View {
     private var locationAlert: Alert {
         Alert(
             title: Text("Location Services"),
-            message: Text(locationAlertMessage),
+            message: Text(alertMessage),
             primaryButton: .default(Text("Settings"), action: {
                 if isMainSetting {
                     openMainSettings()
@@ -173,6 +213,18 @@ struct NewNoteView: View {
             UIApplication.shared.open(url)
         } else {
             openAppSettings() // fallback
+        }
+    }
+    
+    private func importNote(from url: URL) -> Note? {
+        do {
+            let data = try Data(contentsOf: url)
+            let decrypted = try CryptoHelper.decrypt(data: data)
+            let note = try JSONDecoder().decode(Note.self, from: decrypted)
+            return note
+        } catch {
+            print("error - failed to import note")
+            return nil
         }
     }
 }

@@ -21,6 +21,8 @@ struct ShowNoteView: View {
     @State private var showPhotoLibrary = false
     @State private var selectedUIImage: UIImage?
     @State private var isShowingFullImage = false
+    @State private var alertMessage: String?
+    @State private var showMenuPanel = false
 
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -29,6 +31,9 @@ struct ShowNoteView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
+                if showMenuPanel {
+                    menuPanelView()
+                }
                 HStack {
                     imageSection
                     titleSection
@@ -36,6 +41,7 @@ struct ShowNoteView: View {
                 }
                 
                 if let address = viewModel.address { noteLocationSection(address: address) }
+                
                 contentSection
                 
                 Spacer()
@@ -44,6 +50,17 @@ struct ShowNoteView: View {
             .background(viewModel.note.color.noteColor.ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        withAnimation {
+                            showMenuPanel.toggle()
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .padding(.vertical, 16)
+                            .padding(.horizontal, 4)
+                    }
+                }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") {
@@ -58,6 +75,12 @@ struct ShowNoteView: View {
                 await viewModel.loadAddressIfNeeded()
             }
             .overlay(popupOverlay)
+            .onChange(of: showMenuPanel) {
+                if !showMenuPanel {
+                    viewModel.noteShareURL = nil
+                    viewModel.notePDFShareURL = nil
+                }
+            }
         }
         .navigationDestination(isPresented: $isShowingMap) {
             MapView(
@@ -68,6 +91,9 @@ struct ShowNoteView: View {
         }
         .navigationDestination(isPresented: $isShowingFullImage) {
             ShowImageView(image: selectedUIImage)
+        }
+        .alert(item: $alertMessage) { msg in
+            Alert(title: Text(msg))
         }
     }
 
@@ -89,32 +115,9 @@ struct ShowNoteView: View {
                 .foregroundStyle(.primary)
                 .padding()
                 .layoutPriority(1)
-
-                Button {
-                    withAnimation {
-                        showColorPicker.toggle()
-                    }
-                } label: {
-                    Image(systemName: "paintpalette")
-                        .padding(.vertical, 16)
-                        .padding(.horizontal, 4)
-                }
-                
-                Button {
-                    showImageSourceDialog = true
-                } label: {
-                    Image(systemName: "camera.fill")
-                        .padding(.vertical, 8)
-                        .padding(.trailing, 16)
-                }
             }
             .background(.ultraThinMaterial)
             .cornerRadius(viewModel.note.type == .todo ? 5 : 20)
-
-            if showColorPicker {
-                colorPicker
-                    .transition(.scale.combined(with: .opacity))
-            }
         }
         .confirmationDialog("Choose Image Source", isPresented: $showImageSourceDialog) {
             Button("Take Photo") {
@@ -137,6 +140,72 @@ struct ShowNoteView: View {
                 viewModel.onSaveNote()
             }
         }
+    }
+    
+    func menuPanelView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            colorPicker
+            
+            Button(action: {
+                showCamera = true
+            }) {
+                Label("Take a New Photo", systemImage: "camera.fill")
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+            }
+            
+            Button(action: {
+                showPhotoLibrary = true
+            }) {
+                Label("Choose Photo from Library", systemImage: "photo.fill.on.rectangle.fill")
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+            }
+            
+            if let noteShareURL = viewModel.noteShareURL {
+                ShareLink(
+                    item: noteShareURL,
+                    preview: SharePreview("Note Share", image: Image("AppIconShare"))
+                ) {
+                    Label("Share Note", systemImage: "square.and.arrow.up")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .foregroundStyle(.black)
+                }
+            } else {
+                Button(action: {
+                    viewModel.getNoteToShareTempURL()
+                }) {
+                    Label("Share Note: \(viewModel.shareLabelText)", systemImage: "square.and.arrow.up")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                }
+            }
+            
+            if let noteShareURL = viewModel.notePDFShareURL {
+                ShareLink(
+                    item: noteShareURL,
+                    preview: SharePreview("Export Note As PDF", image: Image("AppIconShare"))
+                ) {
+                    Label("Export Note As PDF", systemImage: "square.and.arrow.up")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .foregroundStyle(.black)
+                }
+            } else {
+                Button(action: {
+                    viewModel.getNoteToPDFToShareTempURL()
+                }) {
+                    Label("Export PDF: \(viewModel.exportLabelText)", systemImage: "square.and.arrow.up")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                }
+            }
+        }
+        .padding()
+        .background(Color.clear)
+        .cornerRadius(12)
+        .transition(.scale.combined(with: .opacity))
     }
     
     private var colorPicker: some View {
@@ -357,7 +426,6 @@ struct ShowNoteView: View {
         .onDelete(perform: deleteTodo)
         .onMove(perform: moveTodo)
     }
-
     
     private func getTodoItemAndShowPopup(todoId: UUID) {
         if let index = viewModel.note.todos.firstIndex(where: { $0.id == todoId }) {
@@ -401,4 +469,8 @@ struct ShowNoteView: View {
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+}
+
+extension String: @retroactive Identifiable {
+    public var id: String { self }
 }

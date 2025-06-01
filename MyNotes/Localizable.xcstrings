@@ -129,6 +129,9 @@
         }
       }
     },
+    "Choose Photo from Library" : {
+
+    },
     "Color" : {
       "localizations" : {
         "he" : {
@@ -225,6 +228,12 @@
         }
       }
     },
+    "Export Note As PDF" : {
+
+    },
+    "Export PDF: %@" : {
+
+    },
     "Get Direction" : {
       "localizations" : {
         "he" : {
@@ -280,6 +289,9 @@
           }
         }
       }
+    },
+    "Import Failed" : {
+
     },
     "Is To-Do List?" : {
       "localizations" : {
@@ -353,6 +365,9 @@
         }
       }
     },
+    "Note Share" : {
+
+    },
     "Note Type" : {
       "localizations" : {
         "he" : {
@@ -380,6 +395,9 @@
         }
       }
     },
+    "OK" : {
+
+    },
     "Open Lookaround" : {
       "localizations" : {
         "he" : {
@@ -389,6 +407,9 @@
           }
         }
       }
+    },
+    "Open Note" : {
+
     },
     "Options" : {
       "localizations" : {
@@ -430,6 +451,12 @@
         }
       }
     },
+    "Share Note" : {
+
+    },
+    "Share Note: %@" : {
+
+    },
     "Sort By" : {
       "localizations" : {
         "he" : {
@@ -469,6 +496,9 @@
           }
         }
       }
+    },
+    "Take a New Photo" : {
+
     },
     "Take Photo" : {
       "localizations" : {
