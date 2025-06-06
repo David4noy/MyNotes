@@ -72,6 +72,9 @@
         }
       }
     },
+    "Are you sure you want to remove the saved location from this note?" : {
+
+    },
     "Cancel" : {
       "localizations" : {
         "he" : {
@@ -109,6 +112,9 @@
         }
       }
     },
+    "Change note's text direction" : {
+
+    },
     "Choose from Library" : {
       "localizations" : {
         "he" : {
@@ -128,9 +134,6 @@
           }
         }
       }
-    },
-    "Choose Photo from Library" : {
-
     },
     "Color" : {
       "localizations" : {
@@ -177,6 +180,12 @@
           }
         }
       }
+    },
+    "Delete Location?" : {
+
+    },
+    "Delete Photo" : {
+
     },
     "Disabled" : {
       "localizations" : {
@@ -244,7 +253,11 @@
         }
       }
     },
+    "Handle Photo" : {
+
+    },
     "iCloud Auto Sync" : {
+      "extractionState" : "stale",
       "localizations" : {
         "he" : {
           "stringUnit" : {
@@ -501,6 +514,7 @@
 
     },
     "Take Photo" : {
+      "extractionState" : "stale",
       "localizations" : {
         "he" : {
           "stringUnit" : {
@@ -519,12 +533,6 @@
           }
         }
       }
-    },
-    "Terms of Use coming soon." : {
-
-    },
-    "This app helps you manage notes." : {
-
     },
     "Title" : {
       "localizations" : {
