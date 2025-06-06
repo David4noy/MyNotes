@@ -43,7 +43,7 @@ class Note: Identifiable, Hashable, Codable {
         self.creationDate = creationDate
         self.latitude = latitude
         self.longitude = longitude
-        self.isRightToLeft = isAppInHebrew ? true : false
+        self.isRightToLeft = isAppInHebrew ? false : true
     }
 
     // MARK: - Codable
