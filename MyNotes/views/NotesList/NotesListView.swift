@@ -16,42 +16,10 @@ struct NotesListView: View {
     @Query var notes: [Note]
     @FocusState private var isSearchFieldFocused: Bool
     
-//    @StateObject private var viewModel = NotesListViewModel()
-//    @State private var path = NavigationPath()
+    @StateObject private var viewModel = NotesListViewModel()
     @State private var showNewNoteSheet = false
-    @State private var selectedNote: Note? = nil
     @State private var showDeleteConfirmation = false
-    @State private var noteToDelete: Note?
-    @State private var isSearching = false
-    @State private var searchText = ""
-    @State var settings = AppSettings.load()
     @State private var showSettings = false
-    
-    private var filteredNotes: [Note] {
-        let base = searchText.isEmpty
-        ? notes
-        : notes.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            $0.content.localizedCaseInsensitiveContains(searchText)
-        }
-        
-        switch settings.sortBy {
-        case .date:
-            return base.sorted { $0.creationDate > $1.creationDate }
-        case .color:
-            let colorOrder: [NoteColor] = NoteColor.allCases
-            let sortedByDate = base.sorted { $0.creationDate > $1.creationDate }
-            return sortedByDate.sorted {
-                guard let firstIndex = colorOrder.firstIndex(of: $0.color),
-                      let secondIndex = colorOrder.firstIndex(of: $1.color) else {
-                    return false
-                }
-                return firstIndex < secondIndex
-            }
-        case .alphabetically:
-            return base.sorted { $0.title.lowercased() < $1.title.lowercased() }
-        }
-    }
     
     var body: some View {
         NavigationStack {
@@ -66,23 +34,15 @@ struct NotesListView: View {
             .sheet(isPresented: $showNewNoteSheet) {
                 NewNoteView { newNote in
                     addNote(newNote)
-                    selectedNote = newNote
+                    viewModel.selectedNote = newNote
                     showNewNoteSheet = false
                 }
             }
-            
-            .alert("Are you sure you want to delete this note?", isPresented: $showDeleteConfirmation, presenting: noteToDelete) { note in
-                Button("Delete", role: .destructive) {
-                    deleteNote(note)
-                }
-                Button("Cancel", role: .cancel) {}
-            }
-            
-            .navigationDestination(item: $selectedNote) { note in
+            .navigationDestination(item: $viewModel.selectedNote) { note in
                 ShowNoteView(note: note)
             }
             .navigationDestination(isPresented: $showSettings) {
-                SettingsView(settings: $settings)
+                SettingsView(settings: $viewModel.settings)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -97,7 +57,7 @@ struct NotesListView: View {
             if let note = importedNote {
                 context.insert(note)
                 importedNote = nil
-                selectedNote = note
+                viewModel.selectedNote = note
             }
         }
     }
@@ -110,13 +70,13 @@ struct NotesListView: View {
                 addNote: {showNewNoteSheet = true},
                 toggleSearch: {
                     withAnimation {
-                        isSearching.toggle()
-                        if isSearching {
+                        viewModel.isSearching.toggle()
+                        if viewModel.isSearching {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 isSearchFieldFocused = true
                             }
                         } else {
-                            searchText = ""
+                            viewModel.searchText = ""
                             isSearchFieldFocused = false
                         }
                     }
@@ -126,8 +86,8 @@ struct NotesListView: View {
                 }
             )
             
-            if isSearching {
-                TextField("Search notes...", text: $searchText)
+            if viewModel.isSearching {
+                TextField("Search notes...", text: $viewModel.searchText)
                     .font(.system(size: 22))
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 12)
@@ -139,16 +99,16 @@ struct NotesListView: View {
     
     private func notesList() -> some View {
         return List {
-            ForEach(filteredNotes) { note in
+            ForEach(viewModel.getFilteredNotes(from: notes)) { note in
                 Button {
-                    selectedNote = note
+                    viewModel.selectedNote = note
                 } label: {
                     noteRow(for: note)
                 }
                 .listRowSeparator(.hidden)
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
-                        noteToDelete = note
+                        viewModel.noteToDelete = note
                         showDeleteConfirmation = true
                     } label: {
                         Label("Delete", systemImage: "trash")
@@ -160,7 +120,7 @@ struct NotesListView: View {
         .confirmationDialog(
             "Are you sure you want to delete this note?",
             isPresented: $showDeleteConfirmation,
-            presenting: noteToDelete
+            presenting: viewModel.noteToDelete
         ) { note in
             Button("Delete", role: .destructive) {
                 deleteNote(note)
@@ -195,7 +155,7 @@ struct NotesListView: View {
     
     func deleteNote(_ note: Note) {
         context.delete(note)
-        noteToDelete = nil
+        viewModel.noteToDelete = nil
     }
     
     private func formatDate(_ date: Date) -> String {
