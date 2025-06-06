@@ -45,7 +45,7 @@ struct NoteExporter {
                 func drawText(_ text: String, font: UIFont, color: UIColor = .black) {
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.lineBreakMode = .byWordWrapping
-                    paragraphStyle.alignment = .left
+                    paragraphStyle.alignment = note.isRightToLeft ? .right : .left
                     
                     let attributes: [NSAttributedString.Key: Any] = [
                         .font: font,

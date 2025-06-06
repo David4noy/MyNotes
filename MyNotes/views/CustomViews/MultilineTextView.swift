@@ -32,6 +32,8 @@ struct MultilineTextView: UIViewRepresentable {
             UIBarButtonItem(title: "Done", style: .done, target: context.coordinator, action: #selector(Coordinator.doneTapped))
         ]
         textView.inputAccessoryView = toolbar
+        
+        textView.textAlignment = note.isRightToLeft ? .right : .left
 
         return textView
     }
@@ -40,6 +42,7 @@ struct MultilineTextView: UIViewRepresentable {
         if uiView.text != note.content {
             uiView.text = note.content
         }
+        uiView.textAlignment = note.isRightToLeft ? .right : .left
     }
 
     class Coordinator: NSObject, UITextViewDelegate {

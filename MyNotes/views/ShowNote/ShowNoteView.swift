@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ShowNoteView: View {
     @StateObject private var viewModel: ShowNoteViewModel
+    
     @FocusState private var focusedTodoIndex: Int?
     @Environment(\.editMode) private var editMode
     @State private var showPopup = false
@@ -16,12 +17,13 @@ struct ShowNoteView: View {
     @State private var todoItem = ""
     @State private var showColorPicker = false
     @State private var isShowingMap = false
-    @State private var showImageSourceDialog = false
+    @State private var showImageOptions = false
     @State private var showCamera = false
     @State private var showPhotoLibrary = false
     @State private var selectedUIImage: UIImage?
     @State private var isShowingFullImage = false
     @State private var alertMessage: String?
+    @State private var showDeleteAlert = false
     @State private var showMenuPanel = false
 
     init(note: Note) {
@@ -39,8 +41,6 @@ struct ShowNoteView: View {
                     titleSection
                         .layoutPriority(1)
                 }
-                
-                if let address = viewModel.address { noteLocationSection(address: address) }
                 
                 contentSection
                 
@@ -95,6 +95,14 @@ struct ShowNoteView: View {
         .alert(item: $alertMessage) { msg in
             Alert(title: Text(msg))
         }
+        .alert("Delete Location?", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                viewModel.deleteLocation()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to remove the saved location from this note?")
+        }
     }
 
     private var titleSection: some View {
@@ -109,6 +117,7 @@ struct ShowNoteView: View {
                         }
                     }
                 )
+                .alignedText(isHebrew: viewModel.note.isRightToLeft)
                 .font(.title)
                 .minimumScaleFactor(0.7)
                 .fontWeight(.bold)
@@ -119,12 +128,17 @@ struct ShowNoteView: View {
             .background(.ultraThinMaterial)
             .cornerRadius(viewModel.note.type == .todo ? 5 : 20)
         }
-        .confirmationDialog("Choose Image Source", isPresented: $showImageSourceDialog) {
-            Button("Take Photo") {
+        .confirmationDialog("Choose Image Source", isPresented: $showImageOptions) {
+            Button("Take a New Photo") {
                 showCamera = true
             }
             Button("Choose from Library") {
                 showPhotoLibrary = true
+            }
+            if selectedUIImage != nil {
+                Button("Delete Photo", role: .destructive) {
+                    selectedUIImage = nil
+                }
             }
             Button("Cancel", role: .cancel) {}
         }
@@ -146,18 +160,20 @@ struct ShowNoteView: View {
         VStack(alignment: .leading, spacing: 12) {
             colorPicker
             
+            noteLocationSection
+            
             Button(action: {
-                showCamera = true
+                viewModel.toggleTextDirection()
             }) {
-                Label("Take a New Photo", systemImage: "camera.fill")
+                Label("Change note's text direction", systemImage: "arrow.left.arrow.right")
                     .padding(.vertical, 8)
                     .padding(.horizontal, 16)
             }
             
             Button(action: {
-                showPhotoLibrary = true
+                showImageOptions = true
             }) {
-                Label("Choose Photo from Library", systemImage: "photo.fill.on.rectangle.fill")
+                Label("Handle Photo", systemImage: "photo")
                     .padding(.vertical, 8)
                     .padding(.horizontal, 16)
             }
@@ -203,7 +219,7 @@ struct ShowNoteView: View {
             }
         }
         .padding()
-        .background(Color.clear)
+        .background(Color(UIColor.systemGray5))
         .cornerRadius(12)
         .transition(.scale.combined(with: .opacity))
     }
@@ -226,6 +242,23 @@ struct ShowNoteView: View {
             .padding(.vertical)
         }
     }
+    
+    @ViewBuilder
+    private var noteLocationSection: some View {
+        if let address = viewModel.address {
+            HStack {
+                noteLocation(address: address)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Button(role: .destructive) {
+                    showDeleteAlert = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
 
     private var contentSection: some View {
         Group {
@@ -237,7 +270,7 @@ struct ShowNoteView: View {
         }
     }
     
-    private func noteLocationSection(address: String) -> some View {
+    private func noteLocation(address: String) -> some View {
         Button {
             isShowingMap = true
         } label: {
@@ -375,38 +408,18 @@ struct ShowNoteView: View {
             let completeColor: Color = .black.opacity(0.3)
             
             VStack(spacing: 0) {
-                HStack {
-                    Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(todo.isComplete ? .green : .blue)
-                        .onTapGesture {
-                            todo.isComplete.toggle()
-                        }
-
-                    if shouldEdit {
-                        TextField("Write to-do", text: $todo.item, onEditingChanged: { isEditing in
-                            if !isEditing {
-                                viewModel.onSaveNote()
-                            }
-                        })
-                        .font(.system(size: 24))
-                        .focused($focusedTodoIndex, equals: index)
-                        .foregroundColor(todo.isComplete ? completeColor : viewModel.note.color.textColor)
-                        .strikethrough(todo.isComplete, color: completeColor)
-                        .padding(.vertical, 8)
+                HStack(spacing: 8) {
+                    if viewModel.note.isRightToLeft {
+                        chevronImage()
+                        Spacer()
+                        todoTextField(todo: $todo, index: index, shouldEdit: shouldEdit, completeColor: completeColor)
+                        completionImage(todo: $todo)
                     } else {
-                        Text(todo.item.isEmpty ? "Write to-do" : todo.item)
-                            .font(.system(size: 24))
-                            .foregroundColor(todo.isComplete ? completeColor : viewModel.note.color.textColor)
-                            .strikethrough(todo.isComplete, color: completeColor)
-                            .padding(.vertical, 8)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
+                        completionImage(todo: $todo)
+                        todoTextField(todo: $todo, index: index, shouldEdit: shouldEdit, completeColor: completeColor)
+                        Spacer()
+                        chevronImage()
                     }
-
-                    Spacer()
-                    
-                    Image(systemName: isAppInHebrew ? "chevron.left" : "chevron.right")
-                        .foregroundColor(todo.isComplete ? completeColor: viewModel.note.color.textColor)
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -425,6 +438,47 @@ struct ShowNoteView: View {
         }
         .onDelete(perform: deleteTodo)
         .onMove(perform: moveTodo)
+    }
+    
+    private func completionImage(todo: Binding<TodoItem>) -> some View {
+        Image(systemName: todo.wrappedValue.isComplete ? "checkmark.circle.fill" : "circle")
+            .foregroundColor(todo.wrappedValue.isComplete ? .green : .blue)
+            .onTapGesture {
+                todo.wrappedValue.isComplete.toggle()
+                viewModel.onSaveNote()
+            }
+    }
+
+    private func todoTextField(todo: Binding<TodoItem>, index: Int?, shouldEdit: Bool, completeColor: Color) -> some View {
+        Group {
+            if shouldEdit {
+                TextField("Write to-do", text: todo.item, onEditingChanged: { isEditing in
+                    if !isEditing {
+                        viewModel.onSaveNote()
+                    }
+                })
+                .alignedTextField(isHebrew: viewModel.note.isRightToLeft)
+                .font(.system(size: 24))
+                .focused($focusedTodoIndex, equals: index)
+                .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
+                .strikethrough(todo.wrappedValue.isComplete, color: completeColor)
+                .padding(.vertical, 8)
+            } else {
+                Text(todo.wrappedValue.item.isEmpty ? "Write to-do" : todo.wrappedValue.item)
+                    .alignedText(isHebrew: viewModel.note.isRightToLeft)
+                    .font(.system(size: 24))
+                    .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
+                    .strikethrough(todo.wrappedValue.isComplete, color: completeColor)
+                    .padding(.vertical, 8)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+        }
+    }
+
+    private func chevronImage() -> some View {
+        Image(systemName: viewModel.note.isRightToLeft ? "chevron.left" : "chevron.right")
+            .foregroundColor(viewModel.note.todos.first?.isComplete == true ? .black.opacity(0.3) : viewModel.note.color.textColor)
     }
     
     private func getTodoItemAndShowPopup(todoId: UUID) {
@@ -471,6 +525,3 @@ struct ShowNoteView: View {
     }
 }
 
-extension String: @retroactive Identifiable {
-    public var id: String { self }
-}

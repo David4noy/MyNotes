@@ -22,11 +22,12 @@ struct TextEditorPopup: View {
             VStack(spacing: 16) {
                 Text("Edit Text")
                     .font(.headline)
+                    .alignedText(isHebrew: note.isRightToLeft)
                 
                 TextEditor(text: $internalText)
-                    .font(.system(size: 24)) 
+                    .alignedText(isHebrew: note.isRightToLeft)
+                    .font(.system(size: 24))
                     .frame(height: 150)
-                //  .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
                 

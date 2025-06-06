@@ -15,6 +15,7 @@ class Note: Identifiable, Hashable, Codable {
     var title: String
     var content: String
     var todos: [TodoItem]
+    var isRightToLeft: Bool
     var type: NoteType
     var color: NoteColor
     var creationDate: Date
@@ -42,6 +43,7 @@ class Note: Identifiable, Hashable, Codable {
         self.creationDate = creationDate
         self.latitude = latitude
         self.longitude = longitude
+        self.isRightToLeft = isAppInHebrew ? true : false
     }
 
     // MARK: - Codable
@@ -53,6 +55,7 @@ class Note: Identifiable, Hashable, Codable {
         let title = try container.decode(String.self, forKey: .title)
         let content = try container.decode(String.self, forKey: .content)
         let todos = try container.decode([TodoItem].self, forKey: .todos)
+        let isRightToLeft = try container.decodeIfPresent(Bool.self, forKey: .isRightToLeft) ?? false
         let type = try container.decode(NoteType.self, forKey: .type)
         let color = try container.decode(NoteColor.self, forKey: .color)
         let creationDate = try container.decode(Date.self, forKey: .creationDate)
@@ -63,6 +66,7 @@ class Note: Identifiable, Hashable, Codable {
         self.init(title: title, type: type, color: color, content: content, todos: todos, creationDate: creationDate, latitude: latitude, longitude: longitude)
         self.id = id
         self.imageData = imageData
+        self.isRightToLeft = isRightToLeft
     }
 
     func encode(to encoder: Encoder) throws {
@@ -72,6 +76,7 @@ class Note: Identifiable, Hashable, Codable {
         try container.encode(title, forKey: .title)
         try container.encode(content, forKey: .content)
         try container.encode(todos, forKey: .todos)
+        try container.encode(isRightToLeft, forKey: .isRightToLeft)
         try container.encode(type, forKey: .type)
         try container.encode(color, forKey: .color)
         try container.encode(creationDate, forKey: .creationDate)
@@ -81,7 +86,7 @@ class Note: Identifiable, Hashable, Codable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, title, content, todos, type, color, creationDate, latitude, longitude, imageData
+        case id, title, content, todos, isRightToLeft, type, color, creationDate, latitude, longitude, imageData
     }
 
     // MARK: - Equatable + Hashable

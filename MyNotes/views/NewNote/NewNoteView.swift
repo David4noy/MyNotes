@@ -18,7 +18,7 @@ struct NewNoteView: View {
     @State private var alertMessage = ""
     @State private var cancellables = Set<AnyCancellable>()
     @State private var isMainSetting = false
-    @State private var shouldAddLocation: Bool = false
+    @State private var shouldAddLocation = false
     @State private var showingFileImporter = false
     
     var onSave: (Note) -> Void
@@ -136,7 +136,7 @@ struct NewNoteView: View {
     private var saveButton: some View {
         Button("Save") {
             Task {
-                let location = await LocationManager.shared.getUserLocation()
+                let location = shouldAddLocation ? await LocationManager.shared.getUserLocation() : nil
                 let newNote = Note(
                     title: title.isEmpty ? "Untitled" : title,
                     type: isTodo ? .todo : .textType,

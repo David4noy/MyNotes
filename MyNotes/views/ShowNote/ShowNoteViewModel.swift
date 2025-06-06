@@ -25,6 +25,7 @@ enum PrepareTheNoteState {
     }
 }
 
+//@Observable
 class ShowNoteViewModel: ObservableObject {
     @Published var note: Note
     @Published var address: String? = nil
@@ -63,9 +64,21 @@ class ShowNoteViewModel: ObservableObject {
             self.address = result
         }
     }
+    
+    func deleteLocation() {
+        note.latitude = nil
+        note.longitude = nil
+        address = nil
+        onSaveNote()
+    }
 
     func toggleTodoComplete(_ index: Int) {
         note.todos[index].isComplete.toggle()
+        onSaveNote()
+    }
+    
+    func toggleTextDirection() {
+        note.isRightToLeft.toggle()
         onSaveNote()
     }
     

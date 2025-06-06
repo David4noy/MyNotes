@@ -8,7 +8,7 @@
 import SwiftUICore
 
 enum NoteColor: CaseIterable, Codable {
-    case yellow, orange, green, mint, teal, cyon, indigo, purple, pink, red, brown, gray
+    case yellow, orange, green, mint, teal, cyon, indigo, purple, pink, red, brown
     
     var noteColor: Color {
         switch self {
@@ -16,7 +16,6 @@ enum NoteColor: CaseIterable, Codable {
         case .red: return .red
         case .yellow: return .yellow
         case .cyon: return .cyan
-        case .gray: return .gray
         case .pink: return .pink
         case .brown: return .brown
         case .orange: return .orange

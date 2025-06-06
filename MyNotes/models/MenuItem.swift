@@ -8,7 +8,6 @@
 import SwiftUI
 
 enum MenuItem: CaseIterable, Identifiable {
-    case settings
     case iCloudSync
     case terms
     case about
@@ -17,8 +16,6 @@ enum MenuItem: CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .settings:
-            return String(localized: "Settings")
         case .iCloudSync:
             return String(localized: "iCloud Sync")
         case .terms:
