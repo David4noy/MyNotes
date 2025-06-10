@@ -95,7 +95,7 @@ struct ShowNoteView: View {
         .alert(item: $alertMessage) { msg in
             Alert(title: Text(msg))
         }
-        .alert("Delete Location?", isPresented: $showDeleteAlert) {
+        .alert("Delete Location", isPresented: $showDeleteAlert) {
             Button("Delete", role: .destructive) {
                 viewModel.deleteLocation()
             }
@@ -192,7 +192,7 @@ struct ShowNoteView: View {
                 Button(action: {
                     viewModel.getNoteToShareTempURL()
                 }) {
-                    Label("Share Note: \(viewModel.shareLabelText)", systemImage: "square.and.arrow.up")
+                    Label("Share Note: \(viewModel.shareLabelText) for sharing", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                 }
@@ -212,7 +212,7 @@ struct ShowNoteView: View {
                 Button(action: {
                     viewModel.getNoteToPDFToShareTempURL()
                 }) {
-                    Label("Export PDF: \(viewModel.exportLabelText)", systemImage: "square.and.arrow.up")
+                    Label("Export PDF: \(viewModel.exportLabelText) for exporting", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                 }

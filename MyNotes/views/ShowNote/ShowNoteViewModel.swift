@@ -16,11 +16,11 @@ enum PrepareTheNoteState {
     var title: String {
         switch self {
         case .notPrepare:
-            return "Prepare The Note"
+            return String(localized: "Prepare The Note")
         case .preparing:
-            return "Preparing.."
+            return String(localized: "Preparing..")
         case .error:
-            return "Error: Failed to prepare the note."
+            return String(localized: "Error: Failed to prepare the note.")
         }
     }
 }
@@ -31,8 +31,8 @@ class ShowNoteViewModel: ObservableObject {
     @Published var address: String? = nil
     @Published var noteShareURL: URL?
     @Published var notePDFShareURL: URL?
-    @Published var shareLabelText: String = "Prepare The Note"
-    @Published var exportLabelText: String = "Prepare The Note"
+    @Published var shareLabelText: String = PrepareTheNoteState.notPrepare.title
+    @Published var exportLabelText: String = PrepareTheNoteState.notPrepare.title
     
     var prepareToShareState: PrepareTheNoteState = .notPrepare {
         didSet {

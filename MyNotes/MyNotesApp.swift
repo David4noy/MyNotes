@@ -11,10 +11,12 @@ import SwiftData
 @main
 struct MyNotesApp: App {
     @State private var importedNote: Note? = nil
+    @State private var settings = AppSettings.load()
 
     var body: some Scene {
         WindowGroup {
-            NotesListView(importedNote: importedNote)
+            NotesListView(importedNote: importedNote, settings: $settings)
+                .preferredColorScheme(settings.theme.colorScheme)
                 .onOpenURL { url in
                     importNote(from: url)
                 }

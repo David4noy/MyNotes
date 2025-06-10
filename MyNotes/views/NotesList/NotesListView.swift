@@ -10,13 +10,14 @@ import SwiftData
 
 struct NotesListView: View {
     
-    @State var importedNote: Note?
-    
     @Environment(\.modelContext) private var context
-    @Query var notes: [Note]
-    @FocusState private var isSearchFieldFocused: Bool
+    @State var importedNote: Note?
+    @Binding var settings: AppSettings
     
     @StateObject private var viewModel = NotesListViewModel()
+    @Query var notes: [Note]
+    
+    @FocusState private var isSearchFieldFocused: Bool
     @State private var showNewNoteSheet = false
     @State private var showDeleteConfirmation = false
     @State private var showSettings = false
@@ -34,7 +35,7 @@ struct NotesListView: View {
             .sheet(isPresented: $showNewNoteSheet) {
                 NewNoteView { newNote in
                     addNote(newNote)
-                    viewModel.selectedNote = newNote
+                    viewModel.setSelectedNote(to: newNote)
                     showNewNoteSheet = false
                 }
             }
@@ -42,7 +43,7 @@ struct NotesListView: View {
                 ShowNoteView(note: note)
             }
             .navigationDestination(isPresented: $showSettings) {
-                SettingsView(settings: $viewModel.settings)
+                SettingsView(settings: $settings)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -57,7 +58,7 @@ struct NotesListView: View {
             if let note = importedNote {
                 context.insert(note)
                 importedNote = nil
-                viewModel.selectedNote = note
+                viewModel.setSelectedNote(to: note)
             }
         }
     }
@@ -69,39 +70,58 @@ struct NotesListView: View {
             CustomNavBar(
                 addNote: {showNewNoteSheet = true},
                 toggleSearch: {
-                    withAnimation {
-                        viewModel.isSearching.toggle()
-                        if viewModel.isSearching {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                isSearchFieldFocused = true
-                            }
-                        } else {
-                            viewModel.searchText = ""
-                            isSearchFieldFocused = false
+                    viewModel.isSearching.toggle()
+                    if viewModel.isSearching {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            isSearchFieldFocused = true
                         }
-                    }
-                },
+                    } else {
+                        viewModel.cleanSearch()
+                        isSearchFieldFocused = false
+                    }                },
                 menuTapped: {
                     showSettings = true
                 }
             )
             
             if viewModel.isSearching {
-                TextField("Search notes...", text: $viewModel.searchText)
-                    .font(.system(size: 22))
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal, 12)
-                    .focused($isSearchFieldFocused)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                searchBar()
             }
         }
+        .animation(.easeInOut(duration: 0.15), value: viewModel.isSearching)
+    }
+    
+    private func searchBar() -> some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            
+            TextField("Search notes...", text: $viewModel.searchText)
+                .focused($isSearchFieldFocused)
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+            
+            if !viewModel.searchText.isEmpty {
+                Button {
+                    viewModel.cleanSearch()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(10)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal, 12)
+        .transition(.scale.combined(with: .opacity))
     }
     
     private func notesList() -> some View {
         return List {
-            ForEach(viewModel.getFilteredNotes(from: notes)) { note in
+            ForEach(viewModel.getFilteredNotes(from: notes, settings: settings)) { note in
                 Button {
-                    viewModel.selectedNote = note
+                    viewModel.setSelectedNote(to: note)
                 } label: {
                     noteRow(for: note)
                 }

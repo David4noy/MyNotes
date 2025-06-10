@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUICore
 
 var isAppInHebrew: Bool {
     Locale.current.language.languageCode?.identifier == "he"
@@ -30,10 +31,35 @@ enum SortOption: CaseIterable, Identifiable, Codable {
     }
 }
 
+enum ThemeMode: String, CaseIterable, Identifiable, Codable {
+    case system
+    case light
+    case dark
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .system: return String(localized: "System Default")
+        case .light: return String(localized: "Light")
+        case .dark: return String(localized: "Dark")
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
+
 struct AppSettings: Codable, Equatable {
     var sortBy: SortOption = .date
     var addLocationToNotes: Bool = false
     var iCloudAutoSync: Bool = false
+    var theme: ThemeMode = .system
 }
 
 extension AppSettings {

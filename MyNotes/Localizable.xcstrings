@@ -62,6 +62,16 @@
         }
       }
     },
+    "Appearance" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מראה"
+          }
+        }
+      }
+    },
     "Are you sure you want to delete this note?" : {
       "localizations" : {
         "he" : {
@@ -73,7 +83,14 @@
       }
     },
     "Are you sure you want to remove the saved location from this note?" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "האם להוריד את המיקום השמור מהפתק?"
+          }
+        }
+      }
     },
     "Cancel" : {
       "localizations" : {
@@ -113,7 +130,14 @@
       }
     },
     "Change note's text direction" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שינוי כיוון הטקסט של הפתק"
+          }
+        }
+      }
     },
     "Choose from Library" : {
       "localizations" : {
@@ -161,6 +185,16 @@
         }
       }
     },
+    "Dark" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כהה"
+          }
+        }
+      }
+    },
     "Date" : {
       "localizations" : {
         "he" : {
@@ -181,11 +215,25 @@
         }
       }
     },
-    "Delete Location?" : {
-
+    "Delete Location" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקת מיקום"
+          }
+        }
+      }
     },
     "Delete Photo" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקת תמונה"
+          }
+        }
+      }
     },
     "Disabled" : {
       "localizations" : {
@@ -237,11 +285,35 @@
         }
       }
     },
-    "Export Note As PDF" : {
-
+    "Error: Failed to prepare the note." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שגיאה: הכנת הפתק נכשלה"
+          }
+        }
+      }
     },
-    "Export PDF: %@" : {
-
+    "Export Note As PDF" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייצוא כ PDF"
+          }
+        }
+      }
+    },
+    "Export PDF: %@ for exporting" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייצוא PDF: %@ לייצוא"
+          }
+        }
+      }
     },
     "Get Direction" : {
       "localizations" : {
@@ -254,15 +326,11 @@
       }
     },
     "Handle Photo" : {
-
-    },
-    "iCloud Auto Sync" : {
-      "extractionState" : "stale",
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "סנכרון אוטומטי עם iCloud"
+            "value" : "ניהול תמונה"
           }
         }
       }
@@ -304,7 +372,14 @@
       }
     },
     "Import Failed" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייבוא נכשל"
+          }
+        }
+      }
     },
     "Is To-Do List?" : {
       "localizations" : {
@@ -312,6 +387,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "רשימת פריטים?"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בהיר"
           }
         }
       }
@@ -379,7 +464,14 @@
       }
     },
     "Note Share" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שיתוף פתק"
+          }
+        }
+      }
     },
     "Note Type" : {
       "localizations" : {
@@ -409,7 +501,14 @@
       }
     },
     "OK" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אישור"
+          }
+        }
+      }
     },
     "Open Lookaround" : {
       "localizations" : {
@@ -422,7 +521,14 @@
       }
     },
     "Open Note" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "פתיחת פתק"
+          }
+        }
+      }
     },
     "Options" : {
       "localizations" : {
@@ -430,6 +536,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "אפשרויות"
+          }
+        }
+      }
+    },
+    "Prepare The Note" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הכנת הפתק"
+          }
+        }
+      }
+    },
+    "Preparing.." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מכין…"
           }
         }
       }
@@ -465,10 +591,24 @@
       }
     },
     "Share Note" : {
-
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שיתוף פתק"
+          }
+        }
+      }
     },
-    "Share Note: %@" : {
-
+    "Share Note: %@ for sharing" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שיתוף פתק: %@ לשיתוף"
+          }
+        }
+      }
     },
     "Sort By" : {
       "localizations" : {
@@ -510,16 +650,22 @@
         }
       }
     },
-    "Take a New Photo" : {
-
-    },
-    "Take Photo" : {
-      "extractionState" : "stale",
+    "System Default" : {
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "צילום תמונה"
+            "value" : "ברירת מחדל"
+          }
+        }
+      }
+    },
+    "Take a New Photo" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "צילום תמונה חדשה"
           }
         }
       }
@@ -530,6 +676,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "תנאי שימוש"
+          }
+        }
+      }
+    },
+    "Theme" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ערכת נושא"
           }
         }
       }
