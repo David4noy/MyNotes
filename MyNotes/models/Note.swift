@@ -113,6 +113,10 @@ class Note: Identifiable, Hashable, Codable {
         guard let data = imageData else { return nil }
         return UIImage(data: data)
     }
+    
+    func deleteImage() {
+        self.imageData = nil
+    }
 }
 
 struct TodoItem: Identifiable, Hashable, Codable {

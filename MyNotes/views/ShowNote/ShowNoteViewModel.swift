@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 enum PrepareTheNoteState {
     case notPrepare
@@ -28,7 +29,7 @@ enum PrepareTheNoteState {
 //@Observable
 class ShowNoteViewModel: ObservableObject {
     @Published var note: Note
-    @Published var address: String? = nil
+    @Published var address: String?
     @Published var noteShareURL: URL?
     @Published var notePDFShareURL: URL?
     @Published var shareLabelText: String = PrepareTheNoteState.notPrepare.title
@@ -48,6 +49,22 @@ class ShowNoteViewModel: ObservableObject {
 
     init(note: Note) {
         self.note = note
+    }
+    
+    func getInitialNoteImage() -> UIImage? {
+        return note.getImage()
+    }
+    
+    func setNoteImage(oldImage: UIImage?, newImage: UIImage) {
+        note.setImage(from: newImage)
+        if oldImage != nil {
+            onSaveNote()
+        }
+    }
+    
+    func deleteNoteImage() {
+        note.deleteImage()
+        onSaveNote()
     }
     
     func loadAddressIfNeeded() async {

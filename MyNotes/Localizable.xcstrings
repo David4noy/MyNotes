@@ -72,6 +72,16 @@
         }
       }
     },
+    "Are you sure you want to delete the image from this note?" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "האם למחוק את התמונה מהפתק?"
+          }
+        }
+      }
+    },
     "Are you sure you want to delete this note?" : {
       "localizations" : {
         "he" : {
@@ -215,6 +225,16 @@
         }
       }
     },
+    "Delete Image" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקת תמונה"
+          }
+        }
+      }
+    },
     "Delete Location" : {
       "localizations" : {
         "he" : {
@@ -321,16 +341,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "חישוב מסלול"
-          }
-        }
-      }
-    },
-    "Handle Photo" : {
-      "localizations" : {
-        "he" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ניהול תמונה"
           }
         }
       }
@@ -536,6 +546,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "אפשרויות"
+          }
+        }
+      }
+    },
+    "Photo Options" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אפשרויות תמונה"
           }
         }
       }

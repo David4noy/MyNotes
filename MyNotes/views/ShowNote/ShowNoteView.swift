@@ -24,6 +24,7 @@ struct ShowNoteView: View {
     @State private var isShowingFullImage = false
     @State private var alertMessage: String?
     @State private var showDeleteAlert = false
+    @State private var showDeleteImageAlert = false
     @State private var showMenuPanel = false
 
     init(note: Note) {
@@ -70,7 +71,7 @@ struct ShowNoteView: View {
             }
             .task {
                 if selectedUIImage == nil {
-                    selectedUIImage = viewModel.note.getImage()
+                    selectedUIImage = viewModel.getInitialNoteImage()
                 }
                 await viewModel.loadAddressIfNeeded()
             }
@@ -102,6 +103,15 @@ struct ShowNoteView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Are you sure you want to remove the saved location from this note?")
+        }
+        .alert("Delete Image", isPresented: $showDeleteImageAlert) {
+            Button("Delete", role: .destructive) {
+                selectedUIImage = nil
+                viewModel.deleteNoteImage()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to delete the image from this note?")
         }
     }
 
@@ -137,7 +147,7 @@ struct ShowNoteView: View {
             }
             if selectedUIImage != nil {
                 Button("Delete Photo", role: .destructive) {
-                    selectedUIImage = nil
+                    showDeleteImageAlert = true
                 }
             }
             Button("Cancel", role: .cancel) {}
@@ -148,10 +158,9 @@ struct ShowNoteView: View {
         .sheet(isPresented: $showPhotoLibrary) {
             PhotoLibraryPicker(image: $selectedUIImage)
         }
-        .onChange(of: selectedUIImage) {
-            if let selectedUIImage {
-                viewModel.note.setImage(from: selectedUIImage)
-                viewModel.onSaveNote()
+        .onChange(of: selectedUIImage) { oldImage, newImage in
+            if let newImage {
+                viewModel.setNoteImage(oldImage: oldImage, newImage: newImage)
             }
         }
     }
@@ -173,7 +182,7 @@ struct ShowNoteView: View {
             Button(action: {
                 showImageOptions = true
             }) {
-                Label("Handle Photo", systemImage: "photo")
+                Label("Photo Options", systemImage: "photo")
                     .padding(.vertical, 8)
                     .padding(.horizontal, 16)
             }
