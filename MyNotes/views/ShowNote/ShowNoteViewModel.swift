@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import UIKit
+import SwiftUICore
 
 enum PrepareTheNoteState {
     case notPrepare
@@ -24,12 +25,26 @@ enum PrepareTheNoteState {
             return String(localized: "Error: Failed to prepare the note.")
         }
     }
+    
+    var color: Color {
+        switch self {
+        case .notPrepare:
+            return .blue
+        case .preparing:
+            return .black
+        case .error:
+            return .red
+        }
+    }
 }
 
 //@Observable
 class ShowNoteViewModel: ObservableObject {
     @Published var note: Note
     @Published var address: String?
+    @Published var todoIndex: Int?
+    @Published var todoItem = ""
+    @Published var selectedUIImage: UIImage?
     @Published var noteShareURL: URL?
     @Published var notePDFShareURL: URL?
     @Published var shareLabelText: String = PrepareTheNoteState.notPrepare.title
@@ -51,8 +66,10 @@ class ShowNoteViewModel: ObservableObject {
         self.note = note
     }
     
-    func getInitialNoteImage() -> UIImage? {
-        return note.getImage()
+    func getInitialNoteImage() {
+        if selectedUIImage == nil {
+            selectedUIImage = note.getImage()
+        }
     }
     
     func setNoteImage(oldImage: UIImage?, newImage: UIImage) {
@@ -97,6 +114,11 @@ class ShowNoteViewModel: ObservableObject {
     func toggleTextDirection() {
         note.isRightToLeft.toggle()
         onSaveNote()
+    }
+    
+    func setTodoItemAndShowPopup(index: Int) {
+        todoIndex = index
+        todoItem = note.todos[index].item
     }
     
     func insertTodoAndGetID() -> UUID {

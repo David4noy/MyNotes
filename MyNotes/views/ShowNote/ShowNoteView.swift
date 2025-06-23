@@ -13,24 +13,20 @@ struct ShowNoteView: View {
     @FocusState private var focusedTodoIndex: Int?
     @Environment(\.editMode) private var editMode
     @State private var showPopup = false
-    @State private var todoIndex: Int?
-    @State private var todoItem = ""
     @State private var showColorPicker = false
     @State private var isShowingMap = false
     @State private var showImageOptions = false
     @State private var showCamera = false
     @State private var showPhotoLibrary = false
-    @State private var selectedUIImage: UIImage?
     @State private var isShowingFullImage = false
-    @State private var alertMessage: String?
     @State private var showDeleteAlert = false
     @State private var showDeleteImageAlert = false
     @State private var showMenuPanel = false
-
+    
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
     }
-
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
@@ -70,9 +66,7 @@ struct ShowNoteView: View {
                 }
             }
             .task {
-                if selectedUIImage == nil {
-                    selectedUIImage = viewModel.getInitialNoteImage()
-                }
+                viewModel.getInitialNoteImage()
                 await viewModel.loadAddressIfNeeded()
             }
             .overlay(popupOverlay)
@@ -91,10 +85,7 @@ struct ShowNoteView: View {
             )
         }
         .navigationDestination(isPresented: $isShowingFullImage) {
-            ShowImageView(image: selectedUIImage)
-        }
-        .alert(item: $alertMessage) { msg in
-            Alert(title: Text(msg))
+            ShowImageView(image: viewModel.selectedUIImage)
         }
         .alert("Delete Location", isPresented: $showDeleteAlert) {
             Button("Delete", role: .destructive) {
@@ -106,7 +97,7 @@ struct ShowNoteView: View {
         }
         .alert("Delete Image", isPresented: $showDeleteImageAlert) {
             Button("Delete", role: .destructive) {
-                selectedUIImage = nil
+                viewModel.selectedUIImage = nil
                 viewModel.deleteNoteImage()
             }
             Button("Cancel", role: .cancel) {}
@@ -114,7 +105,7 @@ struct ShowNoteView: View {
             Text("Are you sure you want to delete the image from this note?")
         }
     }
-
+    
     private var titleSection: some View {
         VStack(spacing: 0) {
             HStack (spacing: 4) {
@@ -145,7 +136,7 @@ struct ShowNoteView: View {
             Button("Choose from Library") {
                 showPhotoLibrary = true
             }
-            if selectedUIImage != nil {
+            if viewModel.selectedUIImage != nil {
                 Button("Delete Photo", role: .destructive) {
                     showDeleteImageAlert = true
                 }
@@ -153,12 +144,12 @@ struct ShowNoteView: View {
             Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showCamera) {
-            CameraPicker(image: $selectedUIImage)
+            CameraPicker(image: $viewModel.selectedUIImage)
         }
         .sheet(isPresented: $showPhotoLibrary) {
-            PhotoLibraryPicker(image: $selectedUIImage)
+            PhotoLibraryPicker(image: $viewModel.selectedUIImage)
         }
-        .onChange(of: selectedUIImage) { oldImage, newImage in
+        .onChange(of: viewModel.selectedUIImage) { oldImage, newImage in
             if let newImage {
                 viewModel.setNoteImage(oldImage: oldImage, newImage: newImage)
             }
@@ -195,7 +186,7 @@ struct ShowNoteView: View {
                     Label("Share Note", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.green)
                 }
             } else {
                 Button(action: {
@@ -204,6 +195,7 @@ struct ShowNoteView: View {
                     Label("Share Note: \(viewModel.shareLabelText) for sharing", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
+                        .foregroundStyle(viewModel.prepareToShareState.color)
                 }
             }
             
@@ -215,7 +207,8 @@ struct ShowNoteView: View {
                     Label("Export Note As PDF", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.green)
+                        
                 }
             } else {
                 Button(action: {
@@ -224,6 +217,7 @@ struct ShowNoteView: View {
                     Label("Export PDF: \(viewModel.exportLabelText) for exporting", systemImage: "square.and.arrow.up")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
+                        .foregroundStyle(viewModel.prepareToExportState.color)
                 }
             }
         }
@@ -258,7 +252,7 @@ struct ShowNoteView: View {
             HStack {
                 noteLocation(address: address)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 Button(role: .destructive) {
                     showDeleteAlert = true
                 } label: {
@@ -268,7 +262,7 @@ struct ShowNoteView: View {
             .padding(.vertical, 4)
         }
     }
-
+    
     private var contentSection: some View {
         Group {
             if viewModel.note.type == .todo {
@@ -292,7 +286,7 @@ struct ShowNoteView: View {
     
     private var imageSection: some View {
         Group {
-            if let image = selectedUIImage {
+            if let image = viewModel.selectedUIImage {
                 HStack {
                     Spacer()
                     Button {
@@ -317,20 +311,20 @@ struct ShowNoteView: View {
             if showPopup {
                 GeometryReader { geometry in
                     let size = min(geometry.size.width * 0.8, 400)
-
+                    
                     ZStack {
                         Color.black.opacity(0.3)
                             .ignoresSafeArea()
                             .onTapGesture {
                                 showPopup = false
                             }
-
-                        if let todoIndex {
+                        
+                        if let index = viewModel.todoIndex {
                             TextEditorPopup(
                                 isPresented: $showPopup,
-                                internalText: $todoItem,
+                                internalText: $viewModel.todoItem,
                                 note: $viewModel.note,
-                                index: todoIndex
+                                index: index
                             )
                             .frame(width: size, height: size)
                             .transition(.opacity)
@@ -343,14 +337,14 @@ struct ShowNoteView: View {
         }
         .animation(.easeInOut, value: showPopup)
     }
-
-
+    
+    
     private var todoList: some View {
         List {
             addButtonTop
-
+            
             todoItemsSection
-
+            
             addButtonBottom
         }
         .listStyle(.plain)
@@ -362,9 +356,9 @@ struct ShowNoteView: View {
             }
         }
     }
-
+    
     // MARK: - Components
-
+    
     private var addButtonTop: some View {
         Button(action: {
             let newId = viewModel.insertTodoAndGetID()
@@ -382,7 +376,7 @@ struct ShowNoteView: View {
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
-
+    
     private var addButtonBottom: some View {
         Button(action: {
             let newId = viewModel.addTodoAndGetID()
@@ -400,7 +394,7 @@ struct ShowNoteView: View {
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
-
+    
     private var todoButtonLabel: some View {
         HStack {
             Image(systemName: "plus.circle")
@@ -408,7 +402,7 @@ struct ShowNoteView: View {
                 .font(.system(size: 24))
         }
     }
-
+    
     private var todoItemsSection: some View {
         ForEach($viewModel.note.todos) { $todo in
             let index = viewModel.note.todos.firstIndex(where: { $0.id == todo.id })
@@ -439,7 +433,7 @@ struct ShowNoteView: View {
                 .background(Color.white.opacity(0.4))
                 .cornerRadius(10)
                 .shadow(radius: 4)
-
+                
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
@@ -457,7 +451,7 @@ struct ShowNoteView: View {
                 viewModel.onSaveNote()
             }
     }
-
+    
     private func todoTextField(todo: Binding<TodoItem>, index: Int?, shouldEdit: Bool, completeColor: Color) -> some View {
         Group {
             if shouldEdit {
@@ -484,7 +478,7 @@ struct ShowNoteView: View {
             }
         }
     }
-
+    
     private func chevronImage() -> some View {
         Image(systemName: viewModel.note.isRightToLeft ? "chevron.right" : "chevron.left")
             .foregroundColor(viewModel.note.todos.first?.isComplete == true ? .black.opacity(0.3) : viewModel.note.color.textColor)
@@ -492,8 +486,7 @@ struct ShowNoteView: View {
     
     private func getTodoItemAndShowPopup(todoId: UUID) {
         if let index = viewModel.note.todos.firstIndex(where: { $0.id == todoId }) {
-            todoIndex = index
-            todoItem = viewModel.note.todos[index].item
+            viewModel.setTodoItemAndShowPopup(index: index)
             showPopup = true
         }
     }
@@ -501,29 +494,13 @@ struct ShowNoteView: View {
     private var textContent: some View {
         MultilineTextView(note: $viewModel.note, textColor: viewModel.note.color.textColor)
             .frame(minHeight: 200)
-//        TextEditor(text: $viewModel.note.content)
-//            .padding(16) // Inner padding of text
-//            .background(
-//                RoundedRectangle(cornerRadius: 10)
-//                    .fill(Color(.systemBackground))
-//            )
-//            .foregroundColor(.primary)
-//            .padding() // Outer padding
-//            .toolbar {
-//                ToolbarItemGroup(placement: .keyboard) {
-//                    Spacer()
-//                    Button("Done") {
-//                        hideKeyboard()
-//                    }
-//                }
-//            }
     }
     
     private func deleteTodo(at offsets: IndexSet) {
         viewModel.note.todos.remove(atOffsets: offsets)
         viewModel.onSaveNote()
     }
-
+    
     private func moveTodo(from source: IndexSet, to destination: Int) {
         viewModel.note.todos.move(fromOffsets: source, toOffset: destination)
         viewModel.onSaveNote()
