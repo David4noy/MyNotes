@@ -41,6 +41,16 @@
         }
       }
     },
+    "Add Next" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוספת הבא"
+          }
+        }
+      }
+    },
     "An unexpected error occurred while trying to access location." : {
       "comment" : "Shown when location access fails unexpectedly",
       "localizations" : {

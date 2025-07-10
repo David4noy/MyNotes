@@ -22,6 +22,7 @@ struct ShowNoteView: View {
     @State private var showDeleteAlert = false
     @State private var showDeleteImageAlert = false
     @State private var showMenuPanel = false
+    @State private var isAddingInTopOfList = false
     
     init(note: Note) {
         _viewModel = StateObject(wrappedValue: ShowNoteViewModel(note: note))
@@ -59,6 +60,9 @@ struct ShowNoteView: View {
                     }
                 }
                 ToolbarItemGroup(placement: .keyboard) {
+                    Button("Add Next") {
+                        addTodo(insertAtTop: isAddingInTopOfList)
+                    }
                     Spacer()
                     Button("Done") {
                         hideKeyboard()
@@ -208,7 +212,6 @@ struct ShowNoteView: View {
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                         .foregroundStyle(.green)
-                        
                 }
             } else {
                 Button(action: {
@@ -341,11 +344,13 @@ struct ShowNoteView: View {
     
     private var todoList: some View {
         List {
-            addButtonTop
+            
+            addButton(insertAtTop: true)
             
             todoItemsSection
             
-            addButtonBottom
+            addButton(insertAtTop: false)
+            
         }
         .listStyle(.plain)
         .toolbar {
@@ -359,10 +364,9 @@ struct ShowNoteView: View {
     
     // MARK: - Components
     
-    private var addButtonTop: some View {
+    private func addButton(insertAtTop: Bool) -> some View {
         Button(action: {
-            let newId = viewModel.insertTodoAndGetID()
-            focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
+            addTodo(insertAtTop: insertAtTop)
         }) {
             todoButtonLabel
                 .padding(.vertical, 12)
@@ -377,22 +381,17 @@ struct ShowNoteView: View {
         .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
     
-    private var addButtonBottom: some View {
-        Button(action: {
-            let newId = viewModel.addTodoAndGetID()
+    private func addTodo(insertAtTop: Bool) {
+        isAddingInTopOfList = insertAtTop
+
+        let newId = insertAtTop
+            ? viewModel.insertTodoAndGetID()
+            : viewModel.addTodoAndGetID()
+        
+        focusedTodoIndex = nil
+        DispatchQueue.main.async {
             focusedTodoIndex = viewModel.indexOfTodo(withId: newId)
-        }) {
-            todoButtonLabel
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white.opacity(0.6))
-                .cornerRadius(6)
-                .shadow(radius: 4)
         }
-        .buttonStyle(PlainButtonStyle())
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 4, leading: 2, bottom: 4, trailing: 2))
     }
     
     private var todoButtonLabel: some View {
@@ -455,17 +454,16 @@ struct ShowNoteView: View {
     private func todoTextField(todo: Binding<TodoItem>, index: Int?, shouldEdit: Bool, completeColor: Color) -> some View {
         Group {
             if shouldEdit {
-                TextField("Write to-do", text: todo.item, onEditingChanged: { isEditing in
-                    if !isEditing {
+                TextField("Write to-do", text: todo.item, axis: .vertical)
+                    .onChange(of: todo.item.wrappedValue) {
                         viewModel.onSaveNote()
                     }
-                })
-                .alignedTextField(isHebrew: viewModel.note.isRightToLeft)
-                .font(.system(size: 24))
-                .focused($focusedTodoIndex, equals: index)
-                .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
-                .strikethrough(todo.wrappedValue.isComplete, color: completeColor)
-                .padding(.vertical, 8)
+                    .alignedTextField(isHebrew: viewModel.note.isRightToLeft)
+                    .font(.system(size: 24))
+                    .focused($focusedTodoIndex, equals: index)
+                    .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
+                    .strikethrough(todo.wrappedValue.isComplete, color: completeColor)
+                    .padding(.vertical, 8)
             } else {
                 Text(todo.wrappedValue.item.isEmpty ? "Write to-do" : todo.wrappedValue.item)
                     .alignedText(isHebrew: viewModel.note.isRightToLeft)
