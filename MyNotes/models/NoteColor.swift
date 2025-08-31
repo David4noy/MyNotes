@@ -5,11 +5,11 @@
 //  Created by David Noy on 07/02/2025.
 //
 
-import SwiftUICore
+import SwiftUI
 
-enum NoteColor: CaseIterable, Codable {
+enum NoteColor: String, CaseIterable, Codable {
     case yellow, orange, green, mint, teal, cyon, indigo, purple, pink, red, brown
-    
+
     var noteColor: Color {
         switch self {
         case .green: return .green
@@ -25,15 +25,13 @@ enum NoteColor: CaseIterable, Codable {
         case .indigo: return .indigo
         }
     }
-    
-    var textBackgroundColor: Color {
-        noteColor.opacity(0.5)
-    }
-    
+
+    var textBackgroundColor: Color { noteColor.opacity(0.5) }
+
     var textColor: Color {
         switch self {
         case .yellow, .mint:
-            return .black.opacity(0.87) // fallback, but low contrast
+            return .black.opacity(0.87)
         case .indigo, .purple, .brown:
             return .black
         default:

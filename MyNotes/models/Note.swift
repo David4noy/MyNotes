@@ -11,14 +11,14 @@ import SwiftData
 
 @Model
 class Note: Identifiable, Hashable, Codable {
-    var id = UUID().uuidString
-    var title: String
-    var content: String
-    var todos: [TodoItem]
-    var isRightToLeft: Bool
-    var type: NoteType
-    var color: NoteColor
-    var creationDate: Date
+    var id: String = UUID().uuidString
+    var title: String = ""
+    var content: String = ""
+    var todos: [TodoItem] = []
+    var isRightToLeft: Bool = isAppInHebrew
+    var type: NoteType = NoteType.textType
+    var color: NoteColor = NoteColor.yellow
+    var creationDate: Date = Date()
     var latitude: Double?
     var longitude: Double?
 
@@ -32,8 +32,8 @@ class Note: Identifiable, Hashable, Codable {
         content: String = "",
         todos: [TodoItem] = [],
         creationDate: Date = Date(),
-        latitude: Double?,
-        longitude: Double?
+        latitude: Double? = nil,
+        longitude: Double? = nil
     ) {
         self.title = title
         self.type = type
@@ -43,7 +43,7 @@ class Note: Identifiable, Hashable, Codable {
         self.creationDate = creationDate
         self.latitude = latitude
         self.longitude = longitude
-        self.isRightToLeft = isAppInHebrew ? false : true
+        self.isRightToLeft = isAppInHebrew
     }
 
     // MARK: - Codable
@@ -51,19 +51,26 @@ class Note: Identifiable, Hashable, Codable {
     required convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let id = try container.decode(String.self, forKey: .id)
-        let title = try container.decode(String.self, forKey: .title)
-        let content = try container.decode(String.self, forKey: .content)
-        let todos = try container.decode([TodoItem].self, forKey: .todos)
+        let id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
+        let title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
+        let content = try container.decodeIfPresent(String.self, forKey: .content) ?? ""
+        let todos = try container.decodeIfPresent([TodoItem].self, forKey: .todos) ?? []
         let isRightToLeft = try container.decodeIfPresent(Bool.self, forKey: .isRightToLeft) ?? false
-        let type = try container.decode(NoteType.self, forKey: .type)
-        let color = try container.decode(NoteColor.self, forKey: .color)
-        let creationDate = try container.decode(Date.self, forKey: .creationDate)
+        let type = try container.decodeIfPresent(NoteType.self, forKey: .type) ?? .textType
+        let color = try container.decodeIfPresent(NoteColor.self, forKey: .color) ?? .yellow
+        let creationDate = try container.decodeIfPresent(Date.self, forKey: .creationDate) ?? Date()
         let latitude = try container.decodeIfPresent(Double.self, forKey: .latitude)
         let longitude = try container.decodeIfPresent(Double.self, forKey: .longitude)
         let imageData = try container.decodeIfPresent(Data.self, forKey: .imageData)
 
-        self.init(title: title, type: type, color: color, content: content, todos: todos, creationDate: creationDate, latitude: latitude, longitude: longitude)
+        self.init(title: title,
+                  type: type,
+                  color: color,
+                  content: content,
+                  todos: todos,
+                  creationDate: creationDate,
+                  latitude: latitude,
+                  longitude: longitude)
         self.id = id
         self.imageData = imageData
         self.isRightToLeft = isRightToLeft
@@ -71,7 +78,6 @@ class Note: Identifiable, Hashable, Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
         try container.encode(id, forKey: .id)
         try container.encode(title, forKey: .title)
         try container.encode(content, forKey: .content)
@@ -91,9 +97,7 @@ class Note: Identifiable, Hashable, Codable {
 
     // MARK: - Equatable + Hashable
 
-    static func == (lhs: Note, rhs: Note) -> Bool {
-        lhs.id == rhs.id
-    }
+    static func == (lhs: Note, rhs: Note) -> Bool { lhs.id == rhs.id }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -101,28 +105,19 @@ class Note: Identifiable, Hashable, Codable {
 
     // MARK: - Image Helpers
 
-    func setImage(from uiImage: UIImage) {
-        self.imageData = uiImage.pngData()
-    }
-
-    func setImageData(_ data: Data?) {
-        self.imageData = data
-    }
-
+    func setImage(from uiImage: UIImage) { self.imageData = uiImage.pngData() }
+    func setImageData(_ data: Data?) { self.imageData = data }
     func getImage() -> UIImage? {
         guard let data = imageData else { return nil }
         return UIImage(data: data)
     }
-    
-    func deleteImage() {
-        self.imageData = nil
-    }
+    func deleteImage() { self.imageData = nil }
 }
 
 struct TodoItem: Identifiable, Hashable, Codable {
-    var id = UUID()
-    var item: String
-    var isComplete: Bool
+    var id: UUID = UUID()
+    var item: String = ""
+    var isComplete: Bool = false
 }
 
 enum NoteType: String, CaseIterable, Codable {

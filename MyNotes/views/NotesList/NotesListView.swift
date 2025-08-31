@@ -57,6 +57,7 @@ struct NotesListView: View {
         .task {
             if let note = importedNote {
                 context.insert(note)
+                try? context.save()
                 importedNote = nil
                 viewModel.setSelectedNote(to: note)
             }
@@ -171,10 +172,12 @@ struct NotesListView: View {
     
     func addNote(_ note: Note) {
         context.insert(note)
+        try? context.save()
     }
     
     func deleteNote(_ note: Note) {
         context.delete(note)
+        try? context.save()
         viewModel.noteToDelete = nil
     }
     

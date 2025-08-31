@@ -355,22 +355,6 @@
         }
       }
     },
-    "iCloud explanation" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This app securely backs up your notes to iCloud. You can manage iCloud access in your device's Settings."
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "אפליקציה זו מגבה את הפתקים שלך ל iCloud בצורה מאובטחת. ניתן להפעיל ולכבות בהגדרות המכשיר"
-          }
-        }
-      }
-    },
     "iCloud Sync" : {
       "localizations" : {
         "he" : {
@@ -560,6 +544,16 @@
         }
       }
     },
+    "Pending Changes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שינויים לא שמורים"
+          }
+        }
+      }
+    },
     "Photo Options" : {
       "localizations" : {
         "he" : {
@@ -590,12 +584,32 @@
         }
       }
     },
+    "Recheck Status" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בדיקת סטטוס מחדש"
+          }
+        }
+      }
+    },
     "Save" : {
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "שמירה"
+          }
+        }
+      }
+    },
+    "Save Pending Changes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שמירת שינויים"
           }
         }
       }
@@ -660,12 +674,12 @@
         }
       }
     },
-    "Sync Now" : {
+    "Status" : {
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "גיבוי מיידי"
+            "value" : "סטטוס"
           }
         }
       }

@@ -7,21 +7,25 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>My Note File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>LSTypeIsPackage</key>
-            <false/>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.davidnoy.mynote</string>
 			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>App-Prefs</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<string></string>
