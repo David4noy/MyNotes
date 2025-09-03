@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import UniformTypeIdentifiers
 
 struct NewNoteView: View {
     @Environment(\.dismiss) var dismiss
@@ -55,7 +56,7 @@ struct NewNoteView: View {
         }
         .fileImporter(
             isPresented: $showingFileImporter,
-            allowedContentTypes: [.data],
+            allowedContentTypes: [UTType(exportedAs: "com.davidnoy.mynote")],
             allowsMultipleSelection: false
         ) { result in
             do {
