@@ -478,7 +478,7 @@ struct ShowNoteView: View {
     }
     
     private func chevronImage() -> some View {
-        Image(systemName: viewModel.note.isRightToLeft ? "chevron.right" : "chevron.left")
+        Image(systemName: isAppInHebrew == viewModel.note.isRightToLeft ? "chevron.right" : "chevron.left")
             .foregroundColor(viewModel.note.todos.first?.isComplete == true ? .black.opacity(0.3) : viewModel.note.color.textColor)
     }
     

@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 import UIKit
-import SwiftUICore
+import SwiftUI
 
 enum PrepareTheNoteState {
     case notPrepare
