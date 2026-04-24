@@ -20,22 +20,21 @@ struct MyNotesApp: App {
         WindowGroup {
             NotesListView(importedNote: importedNote, settings: $settings)
                 .preferredColorScheme(settings.theme.colorScheme)
-                .environmentObject(iCloudManager)
                 .onOpenURL { url in
                     importNote(from: url)
                 }
                 .onAppear {
                     Task {
-                        await iCloudManager.checkAndUpdateICloudStatus()
-                        if !iCloudManager.isICloudAvailable {
+                        let isAvailable = await iCloudManager.checkICloudStatus()
+                        if !isAvailable {
                             showToastMessage()
                         }
                     }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                     Task {
-                        await iCloudManager.checkAndUpdateICloudStatus()
-                        if !iCloudManager.isICloudAvailable {
+                        let isAvailable = await iCloudManager.checkICloudStatus()
+                        if !isAvailable {
                             showToastMessage()
                         }
                     }
@@ -43,17 +42,13 @@ struct MyNotesApp: App {
                 .toast(isShowing: $showToast) {
                     HStack {
                         Image(systemName: "xmark.icloud")
-                        VStack(alignment: .leading) {
-                            Text("iCloud Sync Disabled")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            Text("Notes will be saved locally only")
-                                .font(.caption)
-                        }
+                        Text("iCloud is not available")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                     }
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.orange)
+                    .background(Color.red)
                     .cornerRadius(20)
                 }
         }
@@ -75,39 +70,31 @@ struct MyNotesApp: App {
         let schema = Schema([Note.self])
         let cloudID = "iCloud.com.davidnoy.mynotes"
         
-        print("🔄 Setting up unified container with local + CloudKit support")
-        
-        // Create configurations for both local and cloud storage
-        let localConfig = ModelConfiguration(
-            schema: schema,
-            url: URL.documentsDirectory.appending(path: "MyNotesLocal.store"),
-            cloudKitDatabase: .none
-        )
+        print("🔄 Attempting to create CloudKit container with ID: \(cloudID)")
         
         let cloudConfig = ModelConfiguration(
             schema: schema,
-            url: URL.documentsDirectory.appending(path: "MyNotesCloud.store"),
             cloudKitDatabase: .private(cloudID)
         )
         
-        // Try to create container with both configurations
+        // 1) Try CloudKit
         do {
-            // First, try with CloudKit + Local
-            let container = try ModelContainer(for: schema, configurations: [localConfig, cloudConfig])
-            print("✅ SUCCESS: Unified container created with CloudKit support!")
+            let container = try ModelContainer(for: schema, configurations: [cloudConfig])
+            print("✅ SUCCESS: CloudKit container created!")
+            print("✅ Using CloudKit with container: \(cloudID)")
             return container
         } catch {
-            print("⚠️ CloudKit failed, using local-only container")
-            print("Error: \(error)")
+            print("❌ FAILED: CloudKit ModelContainer creation failed!")
+            print("❌ Error: \(error)")
+            print("❌ App will use LOCAL storage instead - NO SYNC!")
             
-            // Fallback: Local only
+            // 2) Fallback: local persistent store (on-device)
             do {
-                let container = try ModelContainer(for: schema, configurations: [localConfig])
-                print("✅ Local-only container created")
-                return container
+                let localContainer = try ModelContainer(for: schema)
+                print("⚠️ Using LOCAL storage - data will NOT sync!")
+                return localContainer
             } catch {
-                print("❌ Local container failed: \(error)")
-                // Last resort: in-memory only
+                print("❌ Even local storage failed: \(error)")
                 let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
                 return try! ModelContainer(for: schema, configurations: [memConfig])
             }
