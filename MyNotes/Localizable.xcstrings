@@ -667,16 +667,6 @@
         }
       }
     },
-    "Preparing..." : {
-      "localizations" : {
-        "he" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "בהכנה…"
-          }
-        }
-      }
-    },
     "Recheck Status" : {
       "localizations" : {
         "he" : {
@@ -752,7 +742,7 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "שתף לאחסון חיצוני"
+            "value" : "שיתוף לאחסון חיצוני"
           }
         }
       }

@@ -28,7 +28,6 @@ struct SettingsView: View {
     @State private var isPreparingExport = false
     @State private var backupExportURL: URL?
     @State private var showPreparingShare = false
-    @State private var okButtonPressed = false
     
     var body: some View {
         VStack {
@@ -56,49 +55,47 @@ struct SettingsView: View {
         .onChange(of: settings) { _, newValue in
             newValue.save()
         }
-        .alert("Export Result", isPresented: $showExportSuccess) {
-            if let url = backupExportURL {
-                ShareLink(item: url) {
-                    Text("Share to External Storage")
-                }
-            }
-            Button("OK") {
-                okButtonPressed = true
-                backupExportURL = nil
-            }
-        } message: {
-            Text(exportMessage)
-        }
-        .onChange(of: showExportSuccess) { _, newValue in
-            if !newValue && !okButtonPressed {
-                showPreparingShare = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    showPreparingShare = false
-                    backupExportURL = nil
-                }
-            }
-            // Reset for next time
-            if !newValue {
-                okButtonPressed = false
-            }
-        }
-        .overlay {
-            if showPreparingShare {
-                ZStack {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                    
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                        Text("Preparing...")
+        .sheet(isPresented: $showExportSuccess) {
+            VStack(spacing: 24) {
+
+                Text("Export Result")
+                    .font(.title3.bold())
+                    .padding(.top, 20)
+
+                Text(exportMessage)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+
+                if let url = backupExportURL {
+                    ShareLink(item: url) {
+                        Text("Share to External Storage")
                             .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 14)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
                     }
-                    .padding(40)
-                    .background(Color(.systemBackground))
-                    .cornerRadius(12)
+                    .padding(.horizontal, 24)
                 }
+
+                Button {
+                    backupExportURL = nil
+                    showExportSuccess = false
+                } label: {
+                    Text("OK")
+                        .font(.headline)
+                        .foregroundColor(.blue)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, 24)
+
+                Spacer()
             }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
         }
         .alert("Import Result", isPresented: $showImportSuccess) {
             Button("OK") {}
@@ -260,7 +257,12 @@ struct SettingsView: View {
                 print("DEBUG: Temp file created at: \(tempURL.path)")
                 
                 await MainActor.run {
-                    exportMessage = "Successfully exported \(notes.count) notes!\n\nLocation: Files → On My iPhone/iPad → MyNotes → Backups\n\n⚠️ Note: This backup is stored inside the app and will be deleted if you uninstall the app.\n\nFor permanent backup, use the share option below."
+                    if !isAppInHebrew {
+                        exportMessage = "Successfully exported \(notes.count) notes!\n\nLocation: Files → On My iPhone/iPad → MyNotes → Backups\n\n⚠️ Note: This backup is stored inside the app and will be deleted if you uninstall the app.\n\nFor permanent backup, use the share option below."
+                    } else {
+                        exportMessage = "הייצוא הושלם בהצלחה! \(notes.count) פתקים יוצאו.\n\nמיקום: קבצים על ה‑iPhone/iPad שלי\n→ MyNotes → Backups\n\n⚠️ שימו לב: הגיבוי הזה נשמר בתוך האפליקציה ויימחק אם האפליקציה תוסר.\n\nלגיבוי קבוע, נא להשתמש באפשרות השיתוף למטה."
+                    }
+
                     backupExportURL = tempURL
                     isPreparingExport = false
                     showExportSuccess = true

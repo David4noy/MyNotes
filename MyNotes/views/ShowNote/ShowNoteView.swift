@@ -122,7 +122,7 @@ struct ShowNoteView: View {
                         }
                     }
                 )
-                .alignedText(isHebrew: viewModel.note.isRightToLeft)
+                .alignedText(isHebrew: viewModel.isRelatedRightToLeft())
                 .font(.title)
                 .minimumScaleFactor(0.7)
                 .fontWeight(.bold)
