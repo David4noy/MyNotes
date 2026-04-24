@@ -112,6 +112,16 @@
         }
       }
     },
+    "Backup & Data Management" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "גיבוי וניהול דאטה"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "he" : {
@@ -235,6 +245,16 @@
         }
       }
     },
+    "Delete All Notes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מחיקת כל הפתקים"
+          }
+        }
+      }
+    },
     "Delete Image" : {
       "localizations" : {
         "he" : {
@@ -325,6 +345,16 @@
         }
       }
     },
+    "Export All Notes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייצוא כל הפתקים"
+          }
+        }
+      }
+    },
     "Export Note As PDF" : {
       "localizations" : {
         "he" : {
@@ -345,6 +375,36 @@
         }
       }
     },
+    "Export Result" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תוצאות הייצוא"
+          }
+        }
+      }
+    },
+    "Exporting..." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מייצא…"
+          }
+        }
+      }
+    },
+    "FINAL WARNING" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אזהרה אחרונה"
+          }
+        }
+      }
+    },
     "Get Direction" : {
       "localizations" : {
         "he" : {
@@ -354,6 +414,9 @@
           }
         }
       }
+    },
+    "iCloud not available" : {
+
     },
     "iCloud Sync" : {
       "localizations" : {
@@ -381,6 +444,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ייבוא נכשל"
+          }
+        }
+      }
+    },
+    "Import Notes from Files" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייבוא פתקים מתיקיה"
+          }
+        }
+      }
+    },
+    "Import Result" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "תוצאות ייבוא"
           }
         }
       }
@@ -584,6 +667,16 @@
         }
       }
     },
+    "Preparing..." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "בהכנה…"
+          }
+        }
+      }
+    },
     "Recheck Status" : {
       "localizations" : {
         "he" : {
@@ -654,12 +747,32 @@
         }
       }
     },
+    "Share to External Storage" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שתף לאחסון חיצוני"
+          }
+        }
+      }
+    },
     "Sort By" : {
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "מיון לפי"
+          }
+        }
+      }
+    },
+    "Sort by Completed" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "מיון לפי הסתיימו"
           }
         }
       }
@@ -734,6 +847,26 @@
         }
       }
     },
+    "This action cannot be undone. ALL %lld notes will be permanently deleted!" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הפעולה הזו אינה יכול להתבטל. כל %lld הפתקים ימחקו לצמיתות!"
+          }
+        }
+      }
+    },
+    "This will permanently delete ALL your notes. Are you sure?" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "זה ימחוק לצמיתות את כל הפתקים שלך, האם למחוק?"
+          }
+        }
+      }
+    },
     "Title" : {
       "localizations" : {
         "he" : {
@@ -760,6 +893,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "כתיבת פריט"
+          }
+        }
+      }
+    },
+    "YES, DELETE EVERYTHING" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כן, למחוק הכל"
           }
         }
       }

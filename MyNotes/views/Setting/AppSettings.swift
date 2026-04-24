@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 var isAppInHebrew: Bool {
-    Bundle.main.preferredLocalizations.first == "he"
+    Locale.current.language.languageCode?.identifier == "he"
 }
 
 enum SortOption: CaseIterable, Identifiable, Codable {

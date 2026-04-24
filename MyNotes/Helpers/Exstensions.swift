@@ -21,3 +21,31 @@ extension View {
             .frame(maxWidth: .infinity, alignment: isHebrew ? .trailing : .leading)
     }
 }
+
+extension DateFormatter {
+    static let backupFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+        return formatter
+    }()
+}
+
+// Toast View Modifier
+extension View {
+    func toast<Content: View>(
+        isShowing: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        self.overlay(
+            VStack {
+                Spacer()
+                if isShowing.wrappedValue {
+                    content()
+                        .padding(.horizontal)
+                        .padding(.bottom, 50)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+        )
+    }
+}

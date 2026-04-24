@@ -7,18 +7,54 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 @main
 struct MyNotesApp: App {
     @State private var importedNote: Note? = nil
     @State private var settings = AppSettings.load()
+    @StateObject private var iCloudManager = GlobalICloudManager()
+    @State private var showToast = false
     
     var body: some Scene {
         WindowGroup {
             NotesListView(importedNote: importedNote, settings: $settings)
                 .preferredColorScheme(settings.theme.colorScheme)
+                .environmentObject(iCloudManager)
                 .onOpenURL { url in
                     importNote(from: url)
+                }
+                .onAppear {
+                    Task {
+                        await iCloudManager.checkAndUpdateICloudStatus()
+                        if !iCloudManager.isICloudAvailable {
+                            showToastMessage()
+                        }
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                    Task {
+                        await iCloudManager.checkAndUpdateICloudStatus()
+                        if !iCloudManager.isICloudAvailable {
+                            showToastMessage()
+                        }
+                    }
+                }
+                .toast(isShowing: $showToast) {
+                    HStack {
+                        Image(systemName: "xmark.icloud")
+                        VStack(alignment: .leading) {
+                            Text("iCloud Sync Disabled")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Text("Notes will be saved locally only")
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.orange)
+                    .cornerRadius(20)
                 }
         }
         .modelContainer(cloudContainer)
@@ -39,38 +75,55 @@ struct MyNotesApp: App {
         let schema = Schema([Note.self])
         let cloudID = "iCloud.com.davidnoy.mynotes"
         
+        print("🔄 Setting up unified container with local + CloudKit support")
+        
+        // Create configurations for both local and cloud storage
+        let localConfig = ModelConfiguration(
+            schema: schema,
+            url: URL.documentsDirectory.appending(path: "MyNotesLocal.store"),
+            cloudKitDatabase: .none
+        )
+        
         let cloudConfig = ModelConfiguration(
             schema: schema,
+            url: URL.documentsDirectory.appending(path: "MyNotesCloud.store"),
             cloudKitDatabase: .private(cloudID)
         )
         
-        // 1) Try CloudKit
+        // Try to create container with both configurations
         do {
-            return try ModelContainer(for: schema, configurations: [cloudConfig])
+            // First, try with CloudKit + Local
+            let container = try ModelContainer(for: schema, configurations: [localConfig, cloudConfig])
+            print("✅ SUCCESS: Unified container created with CloudKit support!")
+            return container
         } catch {
-#if DEBUG
-            print("CloudKit ModelContainer failed: \(error)")
-            print("Falling back to local persistent store.")
-#endif
+            print("⚠️ CloudKit failed, using local-only container")
+            print("Error: \(error)")
+            
+            // Fallback: Local only
+            do {
+                let container = try ModelContainer(for: schema, configurations: [localConfig])
+                print("✅ Local-only container created")
+                return container
+            } catch {
+                print("❌ Local container failed: \(error)")
+                // Last resort: in-memory only
+                let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                return try! ModelContainer(for: schema, configurations: [memConfig])
+            }
+        }
+    }
+    
+    private func showToastMessage() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showToast = true
         }
         
-        // 2) Fallback: local persistent store (on-device)
-        do {
-            return try ModelContainer(for: schema) // default local config
-        } catch {
-#if DEBUG
-            print("Local persistent ModelContainer failed: \(error)")
-            print("Falling back to in-memory store.")
-#endif
-        }
-        
-        // 3) Last resort: in-memory (so the app still runs)
-        do {
-            let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-            return try ModelContainer(for: schema, configurations: [memConfig])
-        } catch {
-            // If even in-memory fails, crash with a clear message (no force unwrap).
-            preconditionFailure("Failed to create any ModelContainer: \(error)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showToast = false
+            }
         }
     }
 }
+

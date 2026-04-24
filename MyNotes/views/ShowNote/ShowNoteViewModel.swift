@@ -66,6 +66,10 @@ class ShowNoteViewModel: ObservableObject {
         self.note = note
     }
     
+    func isRelatedRightToLeft() -> Bool {
+        return isAppInHebrew != note.isRightToLeft
+    }
+    
     func getInitialNoteImage() {
         if selectedUIImage == nil {
             selectedUIImage = note.getImage()
@@ -137,6 +141,11 @@ class ShowNoteViewModel: ObservableObject {
     
     func indexOfTodo(withId id: UUID) -> Int? {
         note.todos.firstIndex { $0.id == id }
+    }
+    
+    func sortTodosByCompletion() {
+        note.todos.sort { !$0.isComplete && $1.isComplete }
+        onSaveNote()
     }
     
     func onSaveNote() {

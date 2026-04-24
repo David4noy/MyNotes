@@ -174,6 +174,16 @@ struct ShowNoteView: View {
                     .padding(.horizontal, 16)
             }
             
+            if viewModel.note.type == .todo {
+                Button(action: {
+                    viewModel.sortTodosByCompletion()
+                }) {
+                    Label("Sort by Completed", systemImage: "arrow.up.arrow.down")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                }
+            }
+            
             Button(action: {
                 showImageOptions = true
             }) {
@@ -411,7 +421,7 @@ struct ShowNoteView: View {
             
             VStack(spacing: 0) {
                 HStack(spacing: 8) {
-                    if viewModel.note.isRightToLeft {
+                    if viewModel.isRelatedRightToLeft() {
                         chevronImage()
                         Spacer()
                         todoTextField(todo: $todo, index: index, shouldEdit: shouldEdit, completeColor: completeColor)
@@ -478,7 +488,7 @@ struct ShowNoteView: View {
     }
     
     private func chevronImage() -> some View {
-        Image(systemName: isAppInHebrew == viewModel.note.isRightToLeft ? "chevron.right" : "chevron.left")
+        Image(systemName: viewModel.isRelatedRightToLeft() ? "chevron.right" : "chevron.left")
             .foregroundColor(viewModel.note.todos.first?.isComplete == true ? .black.opacity(0.3) : viewModel.note.color.textColor)
     }
     

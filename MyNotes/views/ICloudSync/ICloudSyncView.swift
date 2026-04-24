@@ -38,7 +38,7 @@ struct ICloudSyncView: View {
                         HStack {
                             Text("Change iCloud Settings")
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: isAppInHebrew ? "chevron.left" : "chevron.right")
                                 .foregroundStyle(.gray)
                         }
                     }
