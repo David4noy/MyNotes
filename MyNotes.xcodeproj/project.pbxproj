@@ -269,7 +269,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyNotes/MyNotes.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"MyNotes/Preview Content\"";
 				DEVELOPMENT_TEAM = WG588Z842L;
 				ENABLE_PREVIEWS = YES;
@@ -312,7 +312,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyNotes/MyNotes.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"MyNotes/Preview Content\"";
 				DEVELOPMENT_TEAM = WG588Z842L;
 				ENABLE_PREVIEWS = YES;

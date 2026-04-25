@@ -20,7 +20,7 @@ struct AboutView: View {
     - Add a single location to each note to remember where it was created.
     - Customize your notes with beautiful colors to quickly identify and organize.
     - Seamlessly sync and back up all your notes with iCloud, so your data is safe and accessible across all your devices.
-    - Share your notes securely or export them as PDF files for easy sharing and backup.
+    - Share your notes or export them as PDF files for easy sharing and backup.
     - Enjoy a clean and intuitive interface that keeps your workflow smooth.
 
     Your data is stored safely with iCloud sync, but please remember to back up your notes regularly.
@@ -42,7 +42,7 @@ struct AboutView: View {
     - הוספת מיקום לכל פתק כדי לזכור היכן הוא נוצר.
     - התאמה אישית של ההערות עם צבעים יפים לזיהוי מהיר וארגון.
     - סינכרון וגיבוי חלק עם iCloud, כך שהנתונים שלכם בטוחים ונגישים בכל המכשירים.
-    - שיתוף הפתקים בצורה מאובטחת או ייצוא כקובצי PDF לשיתוף וגיבוי נוח.
+    - שיתוף הפתקים או ייצוא כקובצי PDF לשיתוף וגיבוי נוח.
     - ממשק נקי ואינטואיטיבי שמאפשר עבודה חלקה.
 
     הנתונים שלכם נשמרים בבטחה עם סינכרון iCloud, אך מומלץ לגבות את הפתקים שלכם באופן שוטף.
