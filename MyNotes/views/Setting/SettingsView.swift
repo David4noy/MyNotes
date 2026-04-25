@@ -126,7 +126,7 @@ struct SettingsView: View {
         }
         .fileImporter(
             isPresented: $showImportPicker,
-            allowedContentTypes: [.json],
+            allowedContentTypes: [.mynotes],
             allowsMultipleSelection: false
         ) { result in
             switch result {
@@ -234,7 +234,7 @@ struct SettingsView: View {
         Task {
             do {
                 let notesData = try exportNotesToJSON(notes: notes)
-                let fileName = "MyNotes_Backup_\(DateFormatter.backupFormatter.string(from: Date())).json"
+                let fileName = "MyNotes_Backup_\(DateFormatter.backupFormatter.string(from: Date())).mynotes"
                 
                 print("DEBUG: Creating backup file with name: \(fileName)")
                 print("DEBUG: Number of notes to export: \(notes.count)")

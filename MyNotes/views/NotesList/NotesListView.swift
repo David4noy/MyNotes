@@ -7,11 +7,15 @@
 
 import SwiftUI
 import SwiftData
+import Combine
 
 struct NotesListView: View {
     
     @Environment(\.modelContext) private var context
-    @State var importedNote: Note?
+    @Binding var importState: ImportState
+    @State private var showImportAlert = false
+    @State private var pendingImportedNote: [Note]?
+    @State private var showImportFailedAlert = false
     @Binding var settings: AppSettings
     
     @StateObject private var viewModel = NotesListViewModel()
@@ -21,6 +25,9 @@ struct NotesListView: View {
     @State private var showNewNoteSheet = false
     @State private var showDeleteConfirmation = false
     @State private var showSettings = false
+    
+    @StateObject private var iCloudManager = GlobalICloudManager()
+    @State private var showToast = false
     
     var body: some View {
         NavigationStack {
@@ -54,14 +61,90 @@ struct NotesListView: View {
                 }
             }
         }
-        .task {
-            if let note = importedNote {
-                context.insert(note)
-                try? context.save()
-                importedNote = nil
-                viewModel.setSelectedNote(to: note)
+        .onReceive(Just(importState)) { state in
+            switch state {
+            case .didImport(let notes):
+                showImportConfirmation(for: notes)
+
+            case .didFail:
+                presentImportFailedAlert()
+
+            case .regular:
+                break
             }
         }
+        .task {
+            let isAvailable = await iCloudManager.checkICloudStatus()
+            if !isAvailable {
+                showToastMessage()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            Task {
+                let isAvailable = await iCloudManager.checkICloudStatus()
+                if !isAvailable {
+                    showToastMessage()
+                }
+            }
+        }
+        .toast(isShowing: $showToast) {
+            HStack {
+                Image(systemName: "xmark.icloud")
+                Text("iCloud is not available")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .foregroundColor(.white)
+            .padding()
+            .background(Color.red)
+            .cornerRadius(20)
+        }
+        .alert("Import Notes",
+               isPresented: $showImportAlert,
+               presenting: pendingImportedNote) { notes in
+
+            Button("Add", role: .none) {
+                notes.forEach { context.insert($0) }
+                try? context.save()
+                importState = .regular
+            }
+
+            Button("Cancel", role: .cancel) {
+                importState = .regular
+            }
+
+        } message: { _ in
+            Text("Would you like to add the imported notes?")
+        }
+        .alert("Import Failed",
+               isPresented: $showImportFailedAlert) {
+            Button("OK", role: .cancel) {
+                importState = .regular
+            }
+        } message: {
+            Text("Unable to load the imported notes.")
+        }
+    }
+    
+    private func showToastMessage() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showToast = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showToast = false
+            }
+        }
+    }
+    
+    private func showImportConfirmation(for notes: [Note]) {
+        pendingImportedNote = notes
+        showImportAlert = true
+    }
+    
+    private func presentImportFailedAlert() {
+        showImportFailedAlert = true
     }
     
     private var topSection: some View {

@@ -21,6 +21,16 @@
         }
       }
     },
+    "Add" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הוספה"
+          }
+        }
+      }
+    },
     "Add Item" : {
       "localizations" : {
         "he" : {
@@ -448,6 +458,16 @@
         }
       }
     },
+    "Import Notes" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ייבוא פתקים"
+          }
+        }
+      }
+    },
     "Import Notes from Files" : {
       "localizations" : {
         "he" : {
@@ -603,16 +623,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "הפעל את תצוגת הסביבה"
-          }
-        }
-      }
-    },
-    "Open Note" : {
-      "localizations" : {
-        "he" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "פתיחת פתק"
           }
         }
       }
@@ -867,12 +877,32 @@
         }
       }
     },
+    "Unable to load the imported notes." : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "לא היה ניתן לטעון את הפתקים"
+          }
+        }
+      }
+    },
     "Version 1.0.0" : {
       "localizations" : {
         "he" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "גירסה 1.0.0"
+          }
+        }
+      }
+    },
+    "Would you like to add the imported notes?" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "האם להוסיף את הפתקים המיובאים?"
           }
         }
       }

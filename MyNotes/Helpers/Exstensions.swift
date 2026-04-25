@@ -49,3 +49,9 @@ extension View {
         )
     }
 }
+
+import UniformTypeIdentifiers
+
+extension UTType {
+    static let mynotes = UTType(exportedAs: "com.davidnoy.mynotes")
+}

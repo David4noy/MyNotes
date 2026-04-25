@@ -20,7 +20,6 @@ struct NewNoteView: View {
     @State private var cancellables = Set<AnyCancellable>()
     @State private var isMainSetting = false
     @State private var shouldAddLocation = false
-    @State private var showingFileImporter = false
     
     var onSave: (Note) -> Void
 
@@ -33,11 +32,6 @@ struct NewNoteView: View {
             }
             .navigationTitle("New Note")
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Open Note") {
-                        showingFileImporter = true
-                    }
-                }
                 ToolbarItem(placement: .confirmationAction) {
                     saveButton
                 }
@@ -53,37 +47,6 @@ struct NewNoteView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(alertMessage)
-        }
-        .fileImporter(
-            isPresented: $showingFileImporter,
-            allowedContentTypes: [UTType(exportedAs: "com.davidnoy.mynote")],
-            allowsMultipleSelection: false
-        ) { result in
-            do {
-                guard let selectedFile = try result.get().first else { return }
-                
-                guard selectedFile.startAccessingSecurityScopedResource() else {
-                    throw NSError(domain: "com.mynotes", code: 1, userInfo: [NSLocalizedDescriptionKey: "Permission denied"])
-                }
-                defer { selectedFile.stopAccessingSecurityScopedResource() }
-                
-                if let importedNote = importNote(from: selectedFile) {
-                    let newNote = importedNote
-                    newNote.id = UUID().uuidString
-                    newNote.creationDate = Date()
-                    
-                    onSave(newNote)
-                    dismiss()
-                } else {
-                    alertMessage = "Failed to import note: invalid file or decryption failed."
-                }
-                
-            } catch {
-                print("Failed to open note: \(error.localizedDescription)")
-                alertMessage = "Failed to open note"
-                isMainSetting = false
-                showLocationAlert = true
-            }
         }
     }
 
@@ -214,18 +177,6 @@ struct NewNoteView: View {
             UIApplication.shared.open(url)
         } else {
             openAppSettings() // fallback
-        }
-    }
-    
-    private func importNote(from url: URL) -> Note? {
-        do {
-            let data = try Data(contentsOf: url)
-            let decrypted = try CryptoHelper.decrypt(data: data)
-            let note = try JSONDecoder().decode(Note.self, from: decrypted)
-            return note
-        } catch {
-            print("error - failed to import note")
-            return nil
         }
     }
 }

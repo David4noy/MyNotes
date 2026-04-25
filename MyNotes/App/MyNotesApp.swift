@@ -9,60 +9,76 @@ import SwiftUI
 import SwiftData
 import UIKit
 
+enum ImportState {
+    case regular
+    case didImport([Note])
+    case didFail
+}
+
 @main
 struct MyNotesApp: App {
-    @State private var importedNote: Note? = nil
+    @State private var importState: ImportState = .regular
     @State private var settings = AppSettings.load()
-    @StateObject private var iCloudManager = GlobalICloudManager()
-    @State private var showToast = false
     
     var body: some Scene {
         WindowGroup {
-            NotesListView(importedNote: importedNote, settings: $settings)
+            NotesListView(importState: $importState, settings: $settings)
                 .preferredColorScheme(settings.theme.colorScheme)
                 .onOpenURL { url in
-                    importNote(from: url)
-                }
-                .onAppear {
-                    Task {
-                        let isAvailable = await iCloudManager.checkICloudStatus()
-                        if !isAvailable {
-                            showToastMessage()
-                        }
-                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                    Task {
-                        let isAvailable = await iCloudManager.checkICloudStatus()
-                        if !isAvailable {
-                            showToastMessage()
-                        }
-                    }
-                }
-                .toast(isShowing: $showToast) {
-                    HStack {
-                        Image(systemName: "xmark.icloud")
-                        Text("iCloud is not available")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.red)
-                    .cornerRadius(20)
+                    importNotesFromJSON(from: url)
                 }
         }
         .modelContainer(cloudContainer)
     }
     
-    private func importNote(from url: URL) {
+    // Import notes from JSON file
+    private func importNotesFromJSON(from url: URL) {
+        // Start accessing security-scoped resource for external files
+        let shouldStopAccessing = url.startAccessingSecurityScopedResource()
+        var newNotes: [Note] = []
+        
+        defer {
+            // Always stop accessing when done
+            if shouldStopAccessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        
         do {
             let data = try Data(contentsOf: url)
-            let decrypted = try CryptoHelper.decrypt(data: data)
-            let note = try JSONDecoder().decode(Note.self, from: decrypted)
-            importedNote = note
-        } catch {
-            print("error - failed to import note")
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            
+            let importData = try decoder.decode(NotesExportData.self, from: data)
+            
+            // Add imported notes to SwiftData
+            for note in importData.notes {
+                // Create new note with original data
+                let newNote = Note(
+                    title: note.title,
+                    type: note.type,
+                    color: note.color,
+                    content: note.content,
+                    todos: note.todos,
+                    creationDate: note.creationDate, // Keep original creation date!
+                    latitude: note.latitude,
+                    longitude: note.longitude
+                )
+                
+                // Save image if exists
+                if let imageData = note.getImageData() {
+                    newNote.setImageData(imageData)
+                }
+                
+                // Keep original text direction
+                newNote.isRightToLeft = note.isRightToLeft
+                
+                newNotes.append(newNote)
+            }
+            importState = .didImport(newNotes)
+        } catch (let error) {
+            print("Error importing notes: \(error.localizedDescription)")
+            importState = .didFail
         }
     }
     
@@ -97,18 +113,6 @@ struct MyNotesApp: App {
                 print("❌ Even local storage failed: \(error)")
                 let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
                 return try! ModelContainer(for: schema, configurations: [memConfig])
-            }
-        }
-    }
-    
-    private func showToastMessage() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            showToast = true
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                showToast = false
             }
         }
     }

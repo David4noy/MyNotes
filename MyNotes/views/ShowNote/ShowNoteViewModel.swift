@@ -58,7 +58,7 @@ class ShowNoteViewModel: ObservableObject {
     
     var prepareToExportState: PrepareTheNoteState = .notPrepare {
         didSet {
-            exportLabelText = prepareToShareState.title
+            exportLabelText = prepareToExportState.title
         }
     }
 
@@ -171,36 +171,48 @@ class ShowNoteViewModel: ObservableObject {
 
         Task {
             do {
-                let noteToShare = note
-                noteToShare.id = UUID().uuidString
-                noteToShare.creationDate = Date()
+                // 1) Create export structure with ONE note
+                let exportData = NotesExportData(
+                    exportDate: Date(),
+                    notesCount: 1,
+                    appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
+                    notes: [note]
+                )
 
-                let noteData = try JSONEncoder().encode(noteToShare)
+                // 2) Encode to JSON (same format as full backup)
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .iso8601
+                encoder.outputFormatting = .prettyPrinted
 
-                // Optional, but can be removed if large
-                if let jsonString = String(data: noteData, encoding: .utf8) {
-                    print("Note JSON to share:\n\(jsonString)")
+                let jsonData = try encoder.encode(exportData)
+
+                // Optional debug print
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print("Single note export JSON:\n\(jsonString)")
                 }
 
-                let encryptedData = try CryptoHelper.encrypt(data: noteData)
-
-                let filename = noteToShare.title.isEmpty ? "Note" : noteToShare.title
+                // 3) Prepare filename
+                let filename = note.title.isEmpty ? "Note" : note.title
                 let safeFilename = filename.replacingOccurrences(of: "/", with: "_")
 
+                // 4) Create folder
                 let sharedFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                     .appendingPathComponent("SharedNotes", isDirectory: true)
 
                 try FileManager.default.createDirectory(at: sharedFolder, withIntermediateDirectories: true)
 
-                let fileURL = sharedFolder.appendingPathComponent("\(safeFilename).mynote")
-                try encryptedData.write(to: fileURL)
+                // 5) Save file
+                let fileURL = sharedFolder.appendingPathComponent("\(safeFilename).mynotes")
+                try jsonData.write(to: fileURL)
 
+                // 6) Update UI
                 await MainActor.run {
                     noteShareURL = fileURL
                     prepareToShareState = .notPrepare
                 }
+
             } catch {
-                print("error - failed to encrypt or write file: \(error.localizedDescription)")
+                print("error - failed to export note: \(error.localizedDescription)")
                 await MainActor.run {
                     noteShareURL = nil
                     prepareToShareState = .error
