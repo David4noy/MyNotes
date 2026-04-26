@@ -9,26 +9,34 @@ import SwiftUI
 import SwiftData
 import UIKit
 
-enum ImportState {
-    case regular
-    case didImport([Note])
-    case didFail
-}
-
 @main
 struct MyNotesApp: App {
     @State private var importState: ImportState = .regular
     @State private var settings = AppSettings.load()
+    @State private var container: ModelContainer?
     
     var body: some Scene {
         WindowGroup {
-            NotesListView(importState: $importState, settings: $settings)
-                .preferredColorScheme(settings.theme.colorScheme)
-                .onOpenURL { url in
-                    importNotesFromJSON(from: url)
+            Group {
+                if let container {
+                    NotesListView(importState: $importState, settings: $settings)
+                        .modelContainer(container)
+                        .preferredColorScheme(settings.theme.colorScheme)
+                        .onOpenURL { url in
+                            importNotesFromJSON(from: url)
+                        }
+                } else {
+                    VStack(spacing: 20) {
+                        ProgressView()
+                        Text("Loading…")
+                            .font(.headline)
+                    }
                 }
+            }
+            .task {
+                self.container = await createContainerSafely()
+            }
         }
-        .modelContainer(cloudContainer)
     }
     
     // Import notes from JSON file
@@ -82,39 +90,32 @@ struct MyNotesApp: App {
         }
     }
     
-    private var cloudContainer: ModelContainer {
+    private func createContainerSafely() async -> ModelContainer {
+        try? await Task.sleep(nanoseconds: 150_000_000) // 0.15 sec delay
+        
         let schema = Schema([Note.self])
         let cloudID = "iCloud.com.davidnoy.mynotes"
-        
-        print("🔄 Attempting to create CloudKit container with ID: \(cloudID)")
         
         let cloudConfig = ModelConfiguration(
             schema: schema,
             cloudKitDatabase: .private(cloudID)
         )
         
-        // 1) Try CloudKit
-        do {
-            let container = try ModelContainer(for: schema, configurations: [cloudConfig])
-            print("✅ SUCCESS: CloudKit container created!")
-            print("✅ Using CloudKit with container: \(cloudID)")
-            return container
-        } catch {
-            print("❌ FAILED: CloudKit ModelContainer creation failed!")
-            print("❌ Error: \(error)")
-            print("❌ App will use LOCAL storage instead - NO SYNC!")
-            
-            // 2) Fallback: local persistent store (on-device)
-            do {
-                let localContainer = try ModelContainer(for: schema)
-                print("⚠️ Using LOCAL storage - data will NOT sync!")
-                return localContainer
-            } catch {
-                print("❌ Even local storage failed: \(error)")
-                let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-                return try! ModelContainer(for: schema, configurations: [memConfig])
-            }
+        // Try CloudKit
+        if let cloud = try? ModelContainer(for: schema, configurations: [cloudConfig]) {
+            print("CloudKit container ready")
+            return cloud
         }
+        
+        // Fallback: local
+        if let local = try? ModelContainer(for: schema) {
+            print("Using local store")
+            return local
+        }
+        
+        // Last resort: memory
+        let mem = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        return try! ModelContainer(for: schema, configurations: [mem])
     }
 }
 
