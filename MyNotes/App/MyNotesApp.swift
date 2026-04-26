@@ -113,9 +113,13 @@ struct MyNotesApp: App {
             return local
         }
         
-        // Last resort: memory
-        let mem = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        return try! ModelContainer(for: schema, configurations: [mem])
+        do {
+            let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return try ModelContainer(for: schema, configurations: [memConfig])
+        } catch {
+            // If even in-memory fails, crash with a clear message (no force unwrap).
+            preconditionFailure("Failed to create any ModelContainer: \(error)")
+        }
     }
 }
 
