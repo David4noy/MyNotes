@@ -38,12 +38,10 @@ enum PrepareTheNoteState {
     }
 }
 
-//@Observable
 class ShowNoteViewModel: ObservableObject {
     @Published var note: Note
     @Published var address: String?
-    @Published var todoIndex: Int?
-    @Published var todoItem = ""
+    @Published var editingTodoIndex: Int?
     @Published var selectedUIImage: UIImage?
     @Published var noteShareURL: URL?
     @Published var notePDFShareURL: URL?
@@ -118,11 +116,6 @@ class ShowNoteViewModel: ObservableObject {
     func toggleTextDirection() {
         note.isRightToLeft.toggle()
         onSaveNote()
-    }
-    
-    func setTodoItemAndShowPopup(index: Int) {
-        todoIndex = index
-        todoItem = note.todos[index].item
     }
     
     func insertTodoAndGetID() -> UUID {

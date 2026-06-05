@@ -122,6 +122,16 @@
         }
       }
     },
+    "Back" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "חזרה"
+          }
+        }
+      }
+    },
     "Backup & Data Management" : {
       "localizations" : {
         "he" : {
@@ -504,6 +514,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "בהיר"
+          }
+        }
+      }
+    },
+    "Loading…" : {
+      "localizations" : {
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "טוען…"
           }
         }
       }

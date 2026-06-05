@@ -12,7 +12,6 @@ struct ShowNoteView: View {
     
     @FocusState private var focusedTodoIndex: Int?
     @Environment(\.editMode) private var editMode
-    @State private var showPopup = false
     @State private var showColorPicker = false
     @State private var isShowingMap = false
     @State private var showImageOptions = false
@@ -73,7 +72,6 @@ struct ShowNoteView: View {
                 viewModel.getInitialNoteImage()
                 await viewModel.loadAddressIfNeeded()
             }
-            .overlay(popupOverlay)
             .onChange(of: showMenuPanel) {
                 if !showMenuPanel {
                     viewModel.noteShareURL = nil
@@ -222,7 +220,7 @@ struct ShowNoteView: View {
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                         .foregroundStyle(.green)
-                }
+                    }
             } else {
                 Button(action: {
                     viewModel.getNoteToPDFToShareTempURL()
@@ -279,11 +277,44 @@ struct ShowNoteView: View {
     private var contentSection: some View {
         Group {
             if viewModel.note.type == .todo {
-                todoList
+                if let index = viewModel.editingTodoIndex, viewModel.note.todos.indices.contains(index) {
+                    todoInlineEditView(index: index)
+                } else {
+                    todoList
+                }
             } else if viewModel.note.type == .textType {
                 textContent
             }
         }
+    }
+    
+    private func todoInlineEditView(index: Int) -> some View {
+        VStack(spacing: 16) {
+            HStack {
+                Button(action: {
+                    withAnimation {
+                        viewModel.editingTodoIndex = nil
+                        viewModel.onSaveNote()
+                    }
+                }) {
+                    Label("Back", systemImage: "chevron.backward")
+                        .fontWeight(.bold)
+                }
+                .foregroundStyle(viewModel.note.color.textColor)
+                Spacer()
+            }
+            
+            TextEditor(text: $viewModel.note.todos[index].item)
+                .alignedText(isHebrew: viewModel.isRelatedRightToLeft())
+                .font(.system(size: 24))
+                .frame(minHeight: 200)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                .onChange(of: viewModel.note.todos[index].item) {
+                    viewModel.onSaveNote()
+                }
+        }
+        .padding()
     }
     
     private func noteLocation(address: String) -> some View {
@@ -319,53 +350,16 @@ struct ShowNoteView: View {
         }
     }
     
-    private var popupOverlay: some View {
-        Group {
-            if showPopup {
-                GeometryReader { geometry in
-                    let size = min(geometry.size.width * 0.8, 400)
-                    
-                    ZStack {
-                        Color.black.opacity(0.3)
-                            .ignoresSafeArea()
-                            .onTapGesture {
-                                showPopup = false
-                            }
-                        
-                        if let index = viewModel.todoIndex {
-                            TextEditorPopup(
-                                isPresented: $showPopup,
-                                internalText: $viewModel.todoItem,
-                                note: $viewModel.note,
-                                index: index
-                            )
-                            .frame(width: size, height: size)
-                            .transition(.opacity)
-                            .zIndex(1)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-        }
-        .animation(.easeInOut, value: showPopup)
-    }
-    
-    
     private var todoList: some View {
         List {
-            
             addButton(insertAtTop: true)
-            
             todoItemsSection
-            
             addButton(insertAtTop: false)
-            
         }
         .listStyle(.plain)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                if !showPopup {
+                if viewModel.editingTodoIndex == nil {
                     EditButton()
                 }
             }
@@ -435,14 +429,17 @@ struct ShowNoteView: View {
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    getTodoItemAndShowPopup(todoId: todo.id)
+                    if let actualIndex = viewModel.note.todos.firstIndex(where: { $0.id == todo.id }) {
+                        withAnimation {
+                            viewModel.editingTodoIndex = actualIndex
+                        }
+                    }
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 16)
                 .background(Color.white.opacity(0.4))
                 .cornerRadius(10)
                 .shadow(radius: 4)
-                
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
@@ -468,7 +465,7 @@ struct ShowNoteView: View {
                     .onChange(of: todo.item.wrappedValue) {
                         viewModel.onSaveNote()
                     }
-                    .alignedTextField(isHebrew: viewModel.note.isRightToLeft)
+                    .alignedTextField(isHebrew: viewModel.isRelatedRightToLeft())
                     .font(.system(size: 24))
                     .focused($focusedTodoIndex, equals: index)
                     .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
@@ -476,7 +473,7 @@ struct ShowNoteView: View {
                     .padding(.vertical, 8)
             } else {
                 Text(todo.wrappedValue.item.isEmpty ? "Write to-do" : todo.wrappedValue.item)
-                    .alignedText(isHebrew: viewModel.note.isRightToLeft)
+                    .alignedText(isHebrew: viewModel.isRelatedRightToLeft())
                     .font(.system(size: 24))
                     .foregroundColor(todo.wrappedValue.isComplete ? completeColor : viewModel.note.color.textColor)
                     .strikethrough(todo.wrappedValue.isComplete, color: completeColor)
@@ -490,13 +487,6 @@ struct ShowNoteView: View {
     private func chevronImage() -> some View {
         Image(systemName: viewModel.isRelatedRightToLeft() ? "chevron.right" : "chevron.left")
             .foregroundColor(viewModel.note.todos.first?.isComplete == true ? .black.opacity(0.3) : viewModel.note.color.textColor)
-    }
-    
-    private func getTodoItemAndShowPopup(todoId: UUID) {
-        if let index = viewModel.note.todos.firstIndex(where: { $0.id == todoId }) {
-            viewModel.setTodoItemAndShowPopup(index: index)
-            showPopup = true
-        }
     }
     
     private var textContent: some View {
@@ -518,4 +508,3 @@ struct ShowNoteView: View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
-
